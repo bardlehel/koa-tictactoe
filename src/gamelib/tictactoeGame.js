@@ -103,7 +103,7 @@ class TicTacToeGame extends Game {
                         break;
                     }
 
-                    this.setState(STATE.PLAYER_FINISHED_TURN, PLAYER_ONE);
+                    this.setState(STATE.PLAYER_TURN, PLAYER_TWO);
                 } else if (this.gameState.getPlayerTurn() == PLAYER_TWO
                     && playerOneTurnCount === playerTwoTurnCount) {
 
@@ -113,17 +113,8 @@ class TicTacToeGame extends Game {
                         break;
                     }
 
-                    this.setState(STATE.PLAYER_FINISHED_TURN, PLAYER_TWO);
+                    this.setState(STATE.PLAYER_TURN, PLAYER_ONE);
                 }
-                break;
-            case STATE.PLAYER_FINISHED_TURN:
-                let turn = this.gameState.turn;
-                if(turn == PLAYER_ONE) {
-                    turn = PLAYER_TWO;
-                }else {
-                    turn = PLAYER_ONE;
-                }
-                this.setState(STATE.PLAYER_TURN, turn);
                 break;
             case STATE.GAME_OVER:
 

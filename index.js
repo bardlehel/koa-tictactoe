@@ -4,9 +4,14 @@
  *
  */
 import koa from 'koa';
+import hbs from 'koa-hbs';
 import TicTacToeGame from 'tictactoeGame';
 
 var app = koa();
+
+app.use(hbs.middleware({
+    viewPath: __dirname + '/views'
+}));
 
 router.get('/', function *(next) {
     let game = TicTacToeGame.instance();
