@@ -37,10 +37,6 @@ class Game {
         }
     };
 
-    get PlayerCount() {
-        return this[_players].length;
-    }
-
     getPlayer(num) {
         return _.find(this[_players], ()=>this.playerCount == num);
     }

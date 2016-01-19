@@ -1,34 +1,46 @@
 /**
  * Created by Lehel Kovach.
  */
+import GameData from 'gameData';
 
-
-let _grid = Symbol();
-let _size = Symbol();
-
-class CheckerBoard {
-    constructor(size) {
-        this[_size] = size;
-        this[_grid] = [[],[]];
+class CheckerBoard extends GameData {
+    constructor(size, persistence) {
+        super(persistence);
+        this.data.size = size;
+        this.data.grid = [[],[]];
     }
 
     setSquare(x, y, char) {
-        if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this[_size] || y >= this[_size])
+        if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.data.size || y >= this.data.size)
             throw new Error('bad index for board');
 
         if(char === undefined || char === '')
             char = null;
 
-        this[_grid][[x], [y]] = char;
+        this.data.grid[[x], [y]] = char;
     }
 
     getSquare(x, y) {
-        if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this[_size] || y >= this[_size])
+        if(isNaN(x) || isNaN(y) || x < 0 || y < 0 || x >= this.data.size || y >= this.data.size)
             throw new Error('bad index for board');
 
-        var ret = this[_grid][[x], [y]];
+        var ret = this.data.grid[[x], [y]];
 
         if(ret === undefined) return null;
+    }
+
+    getFilledSquares(type=null) {
+        let count = 0;
+        for(let x = 0; x != this.data.size; x++) {
+            for(let y = 0; y != this.data.size; y++) {
+                let square = this.getSquare(x, y);
+                if(square) {
+                   if((type && type == square) || (!type))
+                       count++;
+               }
+            }
+        }
+        return count;
     }
 };
 
