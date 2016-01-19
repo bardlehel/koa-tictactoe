@@ -3,6 +3,8 @@
  */
 import Game from 'base/game';
 import PersistentGameState from 'persistentGameState';
+import CheckerBoard from 'checkerBoard';
+import STATE from 'checkerBoard';
 
 let _joinedPlayers = Symbol();
 
@@ -35,13 +37,13 @@ class TicTacToeGame extends Game {
 
     doGameLogic() {
         switch(this.gameState.state) {
-            case this.gameState.STATE.NOT_STARTED:
+            case STATE.NOT_STARTED:
                 break;
-            case this.gameState.STATE.WAITING_ON_PLAYER:
+            case STATE.WAITING_ON_PLAYER:
                 break;
-            case this.gameState.STATE.PLAYER_TURN:
+            case STATE.PLAYER_TURN:
                 break;
-            case this.gameState.STATE.GAME_OVER:
+            case STATE.GAME_OVER:
                 break;
             default:
                 throw new Error('code should not be reached');

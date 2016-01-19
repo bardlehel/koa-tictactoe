@@ -4,8 +4,11 @@
 import Enum from "enum";
 Enum.register();
 
+var expSTATE;
+
 class GameState {
     const STATE = new Enum('NOT_STARTED', 'WAITING_ON_PLAYER', 'PLAYER_TURN', 'GAME_OVER');
+    expSTATE = STATE;
 
     constructor(gameInstance) {
         this.game = gameInstance;
@@ -37,3 +40,4 @@ class GameState {
 }
 
 export default GameState;
+export { expSTATE as STATE };
