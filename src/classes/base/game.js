@@ -4,7 +4,7 @@
  */
 
 import _ from 'underscore';
-import PersistentGameState from 'persistentGameState';
+import GameState from 'gameState';
 
 //private properties:
 let _singleGameObject = Symbol();
@@ -14,7 +14,7 @@ let _players = [];
 class Game {
     constructor(enforcer) {
         if(enforcer != _singletonEnforcer) throw "Cannot construct singleton";
-        this.gameState = new PersistentGameState();
+        this.gameState = new GameState(this);
     }
 
     static get instance() {
@@ -44,6 +44,18 @@ class Game {
     getPlayer(num) {
         return _.find(this[_players], ()=>this.playerCount == num);
     }
+
+    setState(state, player, winner) {
+        this.gameState.state = state;
+        this.gameState.player = player;
+        this.gameState.winner = winner;
+    }
+
+    doGameLogic() {
+
+    }
+
+
 };
 
 export default Game;

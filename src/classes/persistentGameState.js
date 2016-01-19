@@ -2,7 +2,7 @@
  * Created by lehel on 1/18/16.
  */
 
-import GameState from 'gamestate';
+import PersistentGameState from 'persistentGameState';
 import mongoose from 'mongoose';
 import GameStateModel from 'tictactoeGameState';
 
@@ -13,6 +13,7 @@ let _mongoDocumentID = Symbol();
 class PersistentGameState extends GameState {
     constructor(gameInstance, mongoConnURL) {
         super(gameInstance);
+        this.gameState = new Per
         this[_mongooseConn] = yield mongoose.connect(mongoConnURL);
         this.createNewGame();
     }
@@ -29,6 +30,7 @@ class PersistentGameState extends GameState {
         result.state = this.state;
         result.turn = this.turn;
         result.winner = this.winner;
+        yield result.save();
     }
 
 };
