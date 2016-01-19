@@ -1,6 +1,5 @@
-/**
- * Created by lehel on 1/19/16.
- */
+"use strict";
+
 import mongoose from 'mongoose';
 
 //private member properties
@@ -9,8 +8,9 @@ let _mongoSchema = Symbol();
 let _mongoDocumentID = Symbol();
 let _gameDataDocument = Symbol();
 
+const DEFAULT_COLLECTION_NAME = 'game';
+
 class Persistence {
-    const DEFAULT_COLLECTION_NAME = 'game';
 
     constructor(mongoURI, schema) {
         this[_mongoDocumentID] = null;

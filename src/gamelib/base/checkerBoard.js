@@ -1,6 +1,5 @@
-/**
- * Created by Lehel Kovach.
- */
+"use strict";
+
 import GameData from 'gameData';
 
 class CheckerBoard extends GameData {

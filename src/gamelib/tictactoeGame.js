@@ -1,18 +1,17 @@
-/**
- * Created by lehel on 1/18/16.
- */
+"use strict";
+
 import Game from 'base/game';
 import PersistentGameState from 'persistentGameState';
 import CheckerBoard from 'checkerBoard';
 import STATE from 'checkerBoard';
 
+const TOTAL_PLAYERS = 2;
+const BOARD_SIZE = 3;
+const PLAYER_ONE = 0;
+const PLAYER_TWO = PLAYER_ONE + 1;
+const NO_WINNER = -1;
 
 class TicTacToeGame extends Game {
-    const TOTAL_PLAYERS = 2;
-    const BOARD_SIZE = 3;
-    const PLAYER_ONE = 0;
-    const PLAYER_TWO = PLAYER_ONE + 1;
-    const NO_WINNER = -1;
 
     get instance() {
         return super.instance;

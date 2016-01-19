@@ -1,25 +1,19 @@
-/**
- * Created by lehel on 1/18/16.
- */
-'use strict';
+"use strict";
 
 import Enum from "enum";
 import GameData from 'gameData';
 
 Enum.register();
 
-var expSTATE;
+const STATE =
+    new Enum(
+        'NOT_STARTED',
+        'WAITING_ON_PLAYER',
+        'PLAYER_TURN',
+        'PLAYER_FINISHED_TURN',
+        'GAME_OVER');
 
 class GameState extends GameData {
-    const STATE =
-        new Enum(
-            'NOT_STARTED',
-            'WAITING_ON_PLAYER',
-            'PLAYER_TURN',
-            'PLAYER_FINISHED_TURN',
-            'GAME_OVER');
-
-    expSTATE = STATE;
 
     constructor(gameInstance, persistence) {
         super(persistence);
@@ -59,4 +53,4 @@ class GameState extends GameData {
 }
 
 export default GameState;
-export { expSTATE as STATE };
+export { STATE };

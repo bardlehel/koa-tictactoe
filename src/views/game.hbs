@@ -34,8 +34,7 @@
 <script type="text/javascript">
     xImagePath = "public/images/X.jpg";
     oImagePath = "public/images/O.jpg";
-    context = {{ context|safe }};
-    ajaxUrl = "{% url 'ajax_make_move' box_choice=12345 %}"
+    ajaxUrl = "{{ ajaxEndpoint }}";
 </script>
 
 </body>

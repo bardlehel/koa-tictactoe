@@ -1,7 +1,4 @@
-/**
- * Created by: Lehel Kovach
- * Desc: Game class which is a singleton...
- */
+"use strict";
 
 import _ from 'underscore';
 import GameState from 'gameState';

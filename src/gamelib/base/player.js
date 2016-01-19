@@ -1,6 +1,4 @@
-/**
- * Created by lehel on 1/18/16.
- */
+"use strict";
 
 //static properties
 let playerCount = 0;
