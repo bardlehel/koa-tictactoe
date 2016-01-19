@@ -12,6 +12,7 @@ class TicTacToeGame extends Game {
     const BOARD_SIZE = 3;
     const PLAYER_ONE = 0;
     const PLAYER_TWO = PLAYER_ONE + 1;
+    const NO_WINNER = -1;
 
     get instance() {
         return super.instance;
@@ -45,12 +46,37 @@ class TicTacToeGame extends Game {
         this.gameState.saveGame();
     }
 
+    //return true if all squares are filled or 3-in-a-row exists
     isGameOver() {
+        if (this.board.getFilledSquares() == BOARD_SIZE ^ 2) {
+            return true;
+        } else if (getWinner() != NO_WINNER) {
+            return true;
+        }
 
+        return false;
     }
 
     getWinner() {
+        var winner = NO_WINNER;
 
+        for (let i = 0; i < 3; i++)
+        if (this.board.getSquare(i,0) === this.board.getSquare(i,1)
+            && this.board.getSquare(i,1) === this.board.getSquare(i,2));
+        winner = this.board.getSquare(i,0);
+
+        for (let i = 0; i < 3; i++)
+        if (this.board.getSquare(0, i) === this.board.getSquare(1, i)
+            && this.board.getSquare(1, i) === this.board.getSquare(2, i))
+        winner = this.board.getSquare(0, i);
+
+        if ((this.board.getSquare(0, 0) === this.board.getSquare(1, 1)
+            &&  this.board.getSquare(1, 1)  ===  this.board.getSquare(2, 2))
+                || ( this.board.getSquare(0, 2) ===  this.board.getSquare(1, 1)
+            &&  this.board.getSquare(1, 1)  ===  this.board.getSquare(2, 0) ))
+        winner =  this.board.getSquare(1, 1);
+
+        return winner;
     }
 
     doGameLogic() {
@@ -66,16 +92,41 @@ class TicTacToeGame extends Game {
                 }
                 break;
             case STATE.PLAYER_TURN:
-                let playerOneTurnCount = this.board.getFilledSquares('X');
-                let playerTwoTurnCount = this.board.getFilledSquares('O');
+                let playerOneTurnCount = this.board.getFilledSquares(PLAYER_ONE);
+                let playerTwoTurnCount = this.board.getFilledSquares(PLAYER_TWO);
                 if (this.gameState.getPlayerTurn() == PLAYER_ONE
                     && playerOneTurnCount > playerTwoTurnCount) {
+
+                    //check if game is over?
+                    if (this.isGameOver()) {
+                        this.setState(STATE.GAME_OVER, null, this.getWinner());
+                        break;
+                    }
+
                     this.setState(STATE.PLAYER_FINISHED_TURN, PLAYER_ONE);
+                } else if (this.gameState.getPlayerTurn() == PLAYER_TWO
+                    && playerOneTurnCount === playerTwoTurnCount) {
+
+                    //check if game is over?
+                    if (this.isGameOver()) {
+                        this.setState(STATE.GAME_OVER, null, this.getWinner());
+                        break;
+                    }
+
+                    this.setState(STATE.PLAYER_FINISHED_TURN, PLAYER_TWO);
                 }
                 break;
             case STATE.PLAYER_FINISHED_TURN:
+                let turn = this.gameState.turn;
+                if(turn == PLAYER_ONE) {
+                    turn = PLAYER_TWO;
+                }else {
+                    turn = PLAYER_ONE;
+                }
+                this.setState(STATE.PLAYER_TURN, turn);
                 break;
             case STATE.GAME_OVER:
+
                 break;
             default:
                 throw new Error('code should not be reached');
