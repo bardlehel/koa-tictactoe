@@ -1,0 +1,34 @@
+{
+  "name": "koa-tictactoe",
+  "version": "1.0.0",
+  "description": "tictactoe using koa",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bardlehel/koa-tictactoe.git"
+  },
+  "keywords": [
+    "koa",
+    "tictactoe"
+  ],
+  "author": "Lehel Kovach",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bardlehel/koa-tictactoe/issues"
+  },
+  "homepage": "https://github.com/bardlehel/koa-tictactoe#readme",
+  "devDependencies": {
+    "kerberos": "0.0.17"
+  },
+  "dependencies": {
+    "co": "^4.6.0",
+    "enum": "^2.3.0",
+    "koa": "^1.1.2",
+    "koa-router": "^5.3.0",
+    "mongoose": "^4.3.6",
+    "underscore": "^1.8.3"
+  }
+}
