@@ -3,11 +3,15 @@
  * Created by lehel kovach:
  *
  */
+import serve from 'koa-static-folder';
+import xhr from 'koa-request-xhr';
 import koa from 'koa';
 import hbs from 'koa-hbs';
 import TicTacToeGame from 'tictactoeGame';
 
 var app = koa();
+
+app.use(serve('./public'));
 
 app.use(hbs.middleware({
     viewPath: __dirname + '/views'
@@ -16,12 +20,10 @@ app.use(hbs.middleware({
 router.get('/', function *(next) {
     let game = TicTacToeGame.instance();
 
-    //get game state
-    //get player
-    //display proper output for player
-    //get winner
-    //doGameLogic
-    //loop
+});
+
+router.get('/ajax', function *(next){
+
 });
 
 

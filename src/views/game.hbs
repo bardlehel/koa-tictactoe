@@ -1,4 +1,3 @@
-{% load static %}
 
 <!DOCTYPE html>
 <html>
@@ -7,7 +6,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
     <script src="{% static 'game/script.js' %}"></script>
 
-    <link rel="stylesheet" type="text/css" href="{% static 'game/style.css' %}" />
+    <link rel="stylesheet" type="text/css" href="public/style.css" />
 
     <title>Lehel's Tic Tac Toe!</title>
 </head>
@@ -33,8 +32,8 @@
 </div>
 
 <script type="text/javascript">
-    xImagePath = "{% static 'game/images/X.jpg' %}";
-    oImagePath = "{% static 'game/images/O.jpg' %}";
+    xImagePath = "public/images/X.jpg";
+    oImagePath = "public/images/O.jpg";
     context = {{ context|safe }};
     ajaxUrl = "{% url 'ajax_make_move' box_choice=12345 %}"
 </script>
