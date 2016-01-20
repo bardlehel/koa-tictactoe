@@ -1,6 +1,6 @@
 "use strict";
 
-import serve from 'koa-static-folder';
+import {serve} from 'koa-static-folder';
 import xhr from 'koa-request-xhr';
 import koa from 'koa';
 import hbs from 'koa-hbs';
@@ -26,6 +26,7 @@ router.get('/ajax', function* (next){
         this.body = { message: 'Hello World' };
     }
 });
+
 
 
 app
