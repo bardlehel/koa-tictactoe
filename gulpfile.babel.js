@@ -1,16 +1,22 @@
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import { spawn } from 'child_process';
+import babel from 'gulp-babel';
+
+
 var node;
 
-
-gulp.task('default', function(){
-    // Default task code
+gulp.task('transpile', () => {
+    return gulp.src('src/**/*.js')
+        .pipe(babel({
+            presets: ['es2015-node5']
+        }))
+        .pipe(gulp.dest('dist'));
 });
 
-gulp.task('server', function() {
-    if (node) node.kill()
-    node = spawn('node', ['index.js'], {stdio: 'inherit'})
+gulp.task('default', ['transpile'], function() {
+    if (node) node.kill();
+    node = spawn('node', ['dist/index.js'], {stdio: 'inherit'});
     node.on('close', function (code) {
         if (code === 8) {
             gulp.log('Error detected, waiting for changes...');
@@ -19,5 +25,6 @@ gulp.task('server', function() {
 });
 
 process.on('exit', function() {
-    if (node) node.kill()
+    if (node) node.kill();
 });
+

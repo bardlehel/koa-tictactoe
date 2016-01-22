@@ -1,7 +1,8 @@
 "use strict";
 
 import _ from 'underscore';
-import GameState from 'gameState';
+import GameState from './gameState';
+import Player from './player';
 
 //private properties:
 let _singleGameObject = Symbol();
@@ -9,14 +10,14 @@ let _singletonEnforcer = Symbol();
 let _players = [];
 
 class Game {
-    constructor(enforcer) {
+    constructor(enforcer, persistence) {
         if(enforcer != _singletonEnforcer) throw "Cannot construct singleton";
-        this.gameState = new GameState(this);
+        this.gameState = new GameState(this, persistence);
     }
 
-    static get instance() {
+    static getInstance(persistence) {
         if(!this[_singleGameObject]) {
-            this[_singleGameObject] = new Game(_singletonEnforcer);
+            this[_singleGameObject] = new Game(_singletonEnforcer, persistence);
         }
         return this[_singleGameObject];
     }
@@ -30,8 +31,10 @@ class Game {
 
         //create objects for each player in game
         for(var i = 0; i != numPlayers; i++) {
-            this[_player].push(new Player());
+            this[_players].push(new Player());
         }
+
+        this.gameState.reset();
     };
 
     getPlayer(num) {
@@ -42,6 +45,7 @@ class Game {
         this.gameState.state = state;
         this.gameState.player = player;
         this.gameState.winner = winner;
+        this.gameState.save();
     }
 
     doGameLogic() {

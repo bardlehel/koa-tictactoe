@@ -1,9 +1,9 @@
 "use strict";
 
-import Game from 'base/game';
-import PersistentGameState from 'persistentGameState';
-import CheckerBoard from 'checkerBoard';
-import STATE from 'checkerBoard';
+import Game from './base/game';
+import Persistence from './base/persistence';
+import CheckerBoard from './base/checkerBoard';
+import STATE from './base/checkerBoard';
 
 const TOTAL_PLAYERS = 2;
 const BOARD_SIZE = 3;
@@ -11,15 +11,24 @@ const PLAYER_ONE = 0;
 const PLAYER_TWO = PLAYER_ONE + 1;
 const NO_WINNER = -1;
 
+let _gameSymbol = Symbol();
+let _singletonEnforcer = Symbol();
+
 class TicTacToeGame extends Game {
 
-    get instance() {
-        return super.instance;
+    constructor(enforcer, persistence) {
+         super(enforcer, persistence);
+    }
+
+    static getInstance(persistence) {
+        if(!this[_gameSymbol])
+            this[_gameSymbol] = new TicTacToeGame(_singletonEnforcer, persistence)
+        return this[_gameSymbol];
     }
 
     getIPAddressForPlayer(num) {
         if(isNaN(num) || num < 1) throw new Error('bad player number');
-        return getPlayer(num).ipAddress;
+        return super.getPlayer(num).ipAddress;
     }
 
 
@@ -28,11 +37,10 @@ class TicTacToeGame extends Game {
         this.joinedPlayers = new Map();
         this.gameState = new PersistentGameState(this, connURI);
         this.board = new CheckerBoard(this.BOARD_SIZE);
-        this.filledSquares = 0;
         super.startNewGame(this.TOTAL_PLAYERS);
     }
 
-    playerJoin(ipAddr) {
+    onPlayerJoin(ipAddr) {
         if (this.joinedPlayers.has(ipAddr)) return;
         let joinedSize = this.joinedPlayers.size;
         var player = super.getPlayer(joinedSize);
@@ -42,14 +50,13 @@ class TicTacToeGame extends Game {
 
     setState(state, player=null, winner=null) {
         super.setState(state, player, winner);
-        this.gameState.saveGame();
     }
 
     //return true if all squares are filled or 3-in-a-row exists
     isGameOver() {
         if (this.board.getFilledSquares() == BOARD_SIZE ^ 2) {
             return true;
-        } else if (getWinner() != NO_WINNER) {
+        } else if (this.getWinner() != NO_WINNER) {
             return true;
         }
 
@@ -57,7 +64,7 @@ class TicTacToeGame extends Game {
     }
 
     getWinner() {
-        var winner = NO_WINNER;
+        let winner = NO_WINNER;
 
         for (let i = 0; i < 3; i++)
         if (this.board.getSquare(i,0) === this.board.getSquare(i,1)

@@ -1,7 +1,7 @@
 "use strict";
 
 import Enum from "enum";
-import GameData from 'gameData';
+import GameData from './gameData';
 
 Enum.register();
 
@@ -41,14 +41,6 @@ class GameState extends GameData {
     getPlayerTurn() {
         return this.turn;
     }
-
-    setStateGameOver(winnerNumber) {
-        this.state = this.STATE.GAME_OVER;
-        this.turn = null;
-        this.winner = winnerNumber;
-        this.save();
-    }
-
 
 }
 

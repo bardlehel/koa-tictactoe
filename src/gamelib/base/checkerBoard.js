@@ -1,6 +1,6 @@
 "use strict";
 
-import GameData from 'gameData';
+import GameData from './gameData';
 
 class CheckerBoard extends GameData {
     constructor(size, persistence) {
@@ -43,4 +43,4 @@ class CheckerBoard extends GameData {
     }
 };
 
-export default CheckerBoard();
+export default CheckerBoard;

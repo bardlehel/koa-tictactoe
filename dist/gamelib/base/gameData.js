@@ -1,5 +1,8 @@
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 class GameData {
     constructor(persistence) {
         this.data = {};
@@ -11,4 +14,4 @@ class GameData {
     }
 };
 
-export default GameData;
+exports.default = GameData;
