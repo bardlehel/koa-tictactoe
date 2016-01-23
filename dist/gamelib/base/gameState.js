@@ -24,11 +24,11 @@ class GameState extends _gameData2.default {
     constructor(gameInstance, persistence) {
         super(persistence);
         this.game = gameInstance;
-        reset();
+        this.reset();
     }
 
     reset() {
-        this.data.state = this.STATE.NOT_STARTED;
+        this.data.state = STATE.NOT_STARTED;
         this.data.turn = 1;
         this.data.winner = null;
         this.save();
@@ -39,7 +39,7 @@ class GameState extends _gameData2.default {
             throw new Error('invalid player number');
         }
 
-        this.state = this.STATE.PLAYER_TURN;
+        this.state = STATE.PLAYER_TURN;
         this.turn = player;
         this.save();
     }

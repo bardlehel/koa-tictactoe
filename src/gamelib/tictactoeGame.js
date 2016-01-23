@@ -3,47 +3,45 @@
 import Game from './base/game';
 import Persistence from './base/persistence';
 import CheckerBoard from './base/checkerBoard';
-import STATE from './base/checkerBoard';
+import {STATE} from './base/gameState';
 
-const TOTAL_PLAYERS = 2;
-const BOARD_SIZE = 3;
-const PLAYER_ONE = 0;
-const PLAYER_TWO = PLAYER_ONE + 1;
-const NO_WINNER = -1;
-
-let _gameSymbol = Symbol();
-let _singletonEnforcer = Symbol();
+//private properties...
+let _gameCounter = 0;
 
 class TicTacToeGame extends Game {
 
-    constructor(enforcer, persistence) {
-         super(enforcer, persistence);
-    }
+    static get TOTAL_PLAYERS() { return 2; }
+    static get BOARD_SIZE() { return 3; }
+    static get PLAYER_ONE() { return 0; }
+    static get PLAYER_TWO() { return TicTacToeGame.PLAYER_ONE + 1; }
+    static get NO_WINNER() { return -1; }
 
-    static getInstance(persistence) {
-        if(!this[_gameSymbol])
-            this[_gameSymbol] = new TicTacToeGame(_singletonEnforcer, persistence)
-        return this[_gameSymbol];
+    constructor(persistence) {
+
+        if(++_gameCounter > 1)
+           throw new Error("singleton object");
+
+        super(persistence);
+        this.setupGame();
     }
 
     getIPAddressForPlayer(num) {
-        if(isNaN(num) || num < 1) throw new Error('bad player number');
+        if(isNaN(num) || num < 0 || num > 1) throw new Error('bad player number');
         return super.getPlayer(num).ipAddress;
     }
 
-
-
-    setupGame(connURI) {
+    setupGame() {
         this.joinedPlayers = new Map();
-        this.gameState = new PersistentGameState(this, connURI);
-        this.board = new CheckerBoard(this.BOARD_SIZE);
-        super.startNewGame(this.TOTAL_PLAYERS);
+        this.board = new CheckerBoard(TicTacToeGame.BOARD_SIZE);
+        super.createNewGame(TicTacToeGame.TOTAL_PLAYERS);
     }
 
-    onPlayerJoin(ipAddr) {
+    registerPlayer(ipAddr) {
         if (this.joinedPlayers.has(ipAddr)) return;
+
         let joinedSize = this.joinedPlayers.size;
         var player = super.getPlayer(joinedSize);
+
         player.ipAddress = ipAddr;
         this.joinedPlayers.set(ipAddr, player);
     }
@@ -52,11 +50,20 @@ class TicTacToeGame extends Game {
         super.setState(state, player, winner);
     }
 
+    getGameData() {
+        let ret = {};
+
+        ret.board = this.board.data.grid;
+        ret.state = super.getState();
+
+        return ret;
+    }
+
     //return true if all squares are filled or 3-in-a-row exists
     isGameOver() {
-        if (this.board.getFilledSquares() == BOARD_SIZE ^ 2) {
+        if (this.board.getFilledSquares() == TicTacToeGame.BOARD_SIZE ^ 2) {
             return true;
-        } else if (this.getWinner() != NO_WINNER) {
+        } else if (this.getWinner() != TicTacToeGame.NO_WINNER) {
             return true;
         }
 
@@ -64,7 +71,7 @@ class TicTacToeGame extends Game {
     }
 
     getWinner() {
-        let winner = NO_WINNER;
+        let winner = TicTacToeGame.NO_WINNER;
 
         for (let i = 0; i < 3; i++)
         if (this.board.getSquare(i,0) === this.board.getSquare(i,1)
@@ -85,7 +92,7 @@ class TicTacToeGame extends Game {
         return winner;
     }
 
-    doGameLogic() {
+    doGameLogicStep() {
         switch(this.gameState.state) {
             case STATE.NOT_STARTED:
                 if(this.joinedPlayers.size > 0) {
@@ -94,23 +101,23 @@ class TicTacToeGame extends Game {
                 break;
             case STATE.WAITING_ON_PLAYER:
                 if(this.joinedPlayers.size === 2) {
-                    this.setState(STATE.PLAYER_TURN, PLAYER_ONE);
+                    this.setState(STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
                 }
                 break;
             case STATE.PLAYER_TURN:
-                let playerOneTurnCount = this.board.getFilledSquares(PLAYER_ONE);
-                let playerTwoTurnCount = this.board.getFilledSquares(PLAYER_TWO);
-                if (this.gameState.getPlayerTurn() == PLAYER_ONE
+                let playerOneTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_ONE);
+                let playerTwoTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_TWO);
+                if (this.gameState.getPlayerTurn() == TicTacToeGame.PLAYER_ONE
                     && playerOneTurnCount > playerTwoTurnCount) {
 
                     //check if game is over?
                     if (this.isGameOver()) {
-                        this.setState(STATE.GAME_OVER, null, this.getWinner());
+                        this.setState(STATE.GAME_OVER, null, TicTacToeGame.getWinner());
                         break;
                     }
 
-                    this.setState(STATE.PLAYER_TURN, PLAYER_TWO);
-                } else if (this.gameState.getPlayerTurn() == PLAYER_TWO
+                    this.setState(STATE.PLAYER_TURN, TicTacToeGame.PLAYER_TWO);
+                } else if (this.gameState.getPlayerTurn() == TicTacToeGame.PLAYER_TWO
                     && playerOneTurnCount === playerTwoTurnCount) {
 
                     //check if game is over?
@@ -119,7 +126,7 @@ class TicTacToeGame extends Game {
                         break;
                     }
 
-                    this.setState(STATE.PLAYER_TURN, PLAYER_ONE);
+                    this.setState(STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
                 }
                 break;
             case STATE.GAME_OVER:

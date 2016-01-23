@@ -1,43 +1,54 @@
-/**
- * Created by Lehel on 2/5/14.
- */
-var canClick = true;
-var xImagePath = "";
-var oImagePath = "";
-var context;
-var ajaxUrl = "";
+"use strict";
+
+import $ from 'jQuery';
+
+var ajaxUrl = ""; //defined in handlebars template
+
+let canClick = true;
+let xImagePath = "";
+let oImagePath = "";
+let context;
+let timer = null;
+
+const PlayerX = 0;
+const PlayerO = 1;
 
 function updateBoard(data) {
 
-    var game_state = '';
-    var winner = '';
-    var message = '';
+    let gameState = '';
+    let winner = '';
+    let message = '';
 
-    for (var key in data) {
+    for (let key in data) {
 
         var val = data[key];
 
         if(key.substr(0, 3) == "box") {
             $("#" + key).empty();
-            if(val == 'X')
-                $("#" + key).prepend('<img src="' + xImagePath + '" />');
-            else if(val == 'O')
-                $("#" + key).prepend('<img src="' + oImagePath + '" />');
-        }
 
-        if(key == 'game_state')
-            game_state = val;
-        if(key == 'winner')
+            if(val == 0) {
+                $("#" + key).prepend('<img src="' + xImagePath + '" />');
+                $("#" + key).data('state', 'x');
+            }
+            else if(val == 'O') {
+                $("#" + key).prepend('<img src="' + oImagePath + '" />');
+                $("#" + key).data('state', 'o');
+            }
+        } else $("#" + key).data('state', null);
+
+        if(key === 'game_state')
+            gameState = val;
+        if(key === 'winner')
             winner = val;
-        if(key == 'message')
+        if(key === 'message')
             message = val;
     }
 
-    if(game_state == 'OVER') {
+    if(gameState == 'OVER') {
         if(winner == 0)
-            winner = 'You have won!';
+            winner = 'X wins!';
         else if(winner == 1)
-            winner = 'The Computer has beat you!';
+            winner = 'O wins!';
         else
             winner = 'The game is a draw!';
 
@@ -51,19 +62,22 @@ $(document).ready(function() {
 
     updateBoard(context);
 
+    timer = setTimeout(function() {
+        $.getJSON(ajaxUrl, function(data) {
+            updateBoard(data);
+        });
+    }, 3000);
+
     $("#board div").click(function() {
-        var box = this;
+        //don't allow filled box to be clicked on...
+        if (this.data('state'))
+            return;
 
-        if(canClick) {
-            canClick = false;
-            var newUrl = ajaxUrl.replace("/12345/", "/" + $(box).attr('id').substring(3,4));
-            $.getJSON(newUrl, function( data ) {
-                updateBoard(data);
-                canClick = true;
-            });
-        }
+        //get the id of this clicked box and send it to the server
+        let squareNum = $(this).attr('id').substring(3,4);
+        let newUrl = ajaxUrl.replace('ajax', '');
+        $.post( newUrl, { square: squareNum }, function (data) {
+            updateBoard(data);
+        });
     });
-
-
-
 });

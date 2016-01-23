@@ -1,0 +1,11 @@
+{
+  "ecmaFeatures": {
+    "modules": true,
+    "arrowFunctions": true,
+    "generators": true,
+    "classes": true,
+    "blockBindings": true,
+    "defaultParams": true,
+    "forOf": true
+  }
+}

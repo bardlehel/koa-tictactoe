@@ -1,6 +1,7 @@
 build/
-public/
 node_modules/
 *.log
 *.out
 *.idea/
+dist/
+public/vendor/

@@ -12,7 +12,7 @@ let _playerCount = Symbol();
 
 class Player {
     constructor() {
-        this[_playerCount] = this.getNextPlayerCount();
+        this[_playerCount] = Player.getNextPlayerCount();
     }
 
     get playerCount() {

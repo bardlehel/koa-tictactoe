@@ -15,7 +15,7 @@ class Persistence {
     constructor(mongoURI, schema) {
         this[_mongoDocumentID] = null;
         this[_mongoSchema] = schema;
-        connect(mongoURI);
+        this.connect(mongoURI);
     }
 
     *connect(mongoConnURI) {

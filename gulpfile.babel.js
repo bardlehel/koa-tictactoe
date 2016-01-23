@@ -1,8 +1,9 @@
+import 'babel-core/register';
 import gulp from 'gulp';
 import gutil from 'gulp-util';
 import { spawn } from 'child_process';
 import babel from 'gulp-babel';
-
+import mocha from 'gulp-mocha';
 
 var node;
 
@@ -14,7 +15,18 @@ gulp.task('transpile', () => {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default', ['transpile'], function() {
+gulp.task('run-tests', () => {
+    return gulp.src('test/**/*.js')
+        .pipe(mocha({
+            compilers: 'js:babel-core/register'
+        }))
+        .once('error', () => {
+            process.exit(1);
+        });
+});
+
+
+gulp.task('server-start', ['run-tests', 'transpile'], function() {
     if (node) node.kill();
     node = spawn('node', ['dist/index.js'], {stdio: 'inherit'});
     node.on('close', function (code) {
@@ -24,7 +36,8 @@ gulp.task('default', ['transpile'], function() {
     });
 });
 
+gulp.task('default', ['server-start']);
+
 process.on('exit', function() {
     if (node) node.kill();
 });
-

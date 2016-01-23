@@ -1,0 +1,27 @@
+{
+  "name": "koa-tictactoe",
+  "description": "tictactoe using koa",
+  "main": "index.js",
+  "authors": [
+    "Lehel Kovach"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "koa",
+    "tictactoe"
+  ],
+  "homepage": "https://github.com/bardlehel/koa-tictactoe",
+  "moduleType": [],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jQuery": "~2.2.0"
+  }
+}
