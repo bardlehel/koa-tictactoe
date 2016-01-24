@@ -50,7 +50,7 @@ let game = new _tictactoeGame2.default(persistence);
 app.use((0, _koaRequestXhr2.default)());
 app.use((0, _koaStaticFolder2.default)('./src/public'));
 app.use(_koaHbs2.default.middleware({
-    viewPath: __dirname + '/views'
+    viewPath: __dirname + '/../src/views'
 }));
 
 router.get('/', function* (next) {
@@ -62,7 +62,7 @@ router.get('/', function* (next) {
         game.doGameLogicStep();
     }
 
-    yield this.render('views/startgame', { gameData: game.getGameData() });
+    this.body = yield this.render('game', { gameData: game.getGameData() });
 });
 
 router.post('/', function* (next) {
@@ -78,6 +78,8 @@ router.post('/', function* (next) {
 
     game.board.setSquare(data.square, player);
     game.doGameLogicStep();
+
+    this.redirect('/');
 });
 
 router.get('/ajax', function* (next) {

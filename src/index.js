@@ -20,7 +20,7 @@ let game = new TicTacToeGame(persistence);
 app.use(xhr());
 app.use(serve('./src/public'));
 app.use(hbs.middleware({
-    viewPath: __dirname + '/views'
+    viewPath: __dirname + '/../src/views'
 }));
 
 router.get('/', function* (next) {
@@ -33,7 +33,7 @@ router.get('/', function* (next) {
         game.doGameLogicStep();
     }
 
-    yield this.render('views/startgame', { gameData: game.getGameData() });
+    this.body = yield this.render('game', { gameData: game.getGameData() });
 });
 
 router.post('/', function* (next) {
@@ -49,6 +49,8 @@ router.post('/', function* (next) {
 
     game.board.setSquare(data.square, player);
     game.doGameLogicStep();
+
+    this.redirect('/');
 });
 
 router.get('/ajax', function* (next){

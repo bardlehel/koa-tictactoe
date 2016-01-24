@@ -19,7 +19,8 @@ var _player2 = _interopRequireDefault(_player);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //private properties:
-let _players = [];
+let _players = Symbol();
+let _totalPlayers = Symbol();
 
 class Game {
     constructor(persistence) {
@@ -40,8 +41,20 @@ class Game {
         this.gameState.reset();
     }
 
-    getPlayer(num) {
-        return _underscore2.default.find(this[_players], () => this.playerCount == num);
+    getPlayerByCount(playerCount) {
+        if (playerCount < 1) throw new Error('plq');
+
+        return _underscore2.default.find(this[_players], () => this.playerCount == playerCount);
+    }
+
+    getPlayerByIndex(n) {
+        if (n < 0) throw new Error('plq');
+
+        return this[_players][n];
+    }
+
+    get Players() {
+        return this[_players];
     }
 
     getState() {

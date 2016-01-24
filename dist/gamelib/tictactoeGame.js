@@ -22,6 +22,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //private properties...
 let _gameCounter = 0;
+let _gameInstance = null;
 
 class TicTacToeGame extends _game2.default {
 
@@ -45,13 +46,20 @@ class TicTacToeGame extends _game2.default {
 
         if (++_gameCounter > 1) throw new Error("singleton object");
 
+        if (!persistence) throw new Error("persistence object required!");
+
         super(persistence);
         this.setupGame();
+        _gameInstance = this;
+    }
+
+    static get gameInstance() {
+        return _gameInstance;
     }
 
     getIPAddressForPlayer(num) {
         if (isNaN(num) || num < 0 || num > 1) throw new Error('bad player number');
-        return super.getPlayer(num).ipAddress;
+        return super.getPlayerByIndex(num).ipAddress;
     }
 
     setupGame() {
@@ -61,10 +69,14 @@ class TicTacToeGame extends _game2.default {
     }
 
     registerPlayer(ipAddr) {
+        if (!ipAddr) throw new Error('no ipaddr supplied');
+
         if (this.joinedPlayers.has(ipAddr)) return;
 
         let joinedSize = this.joinedPlayers.size;
-        var player = super.getPlayer(joinedSize);
+        let player = null;
+
+        if (joinedSize == 0) player = super.getPlayerByIndex(TicTacToeGame.PLAYER_ONE);else player = super.getPlayerByIndex(TicTacToeGame.PLAYER_TWO);
 
         player.ipAddress = ipAddr;
         this.joinedPlayers.set(ipAddr, player);
@@ -82,6 +94,21 @@ class TicTacToeGame extends _game2.default {
 
         ret.board = this.board.data.grid;
         ret.state = super.getState();
+
+        switch (ret.state.state) {
+            case _gameState.STATE.WAITING_ON_PLAYER:
+                ret.message = "Waiting on Player 2...";
+                break;
+            case _gameState.STATE.PLAYER_TURN:
+                if (ret.state.playerTurn == TicTacToeGame.PLAYER_ONE) ret.message = "X to move!";else ret.message = "O to move!";
+                break;
+            case _gameState.STATE.PLAYER_FINISHED_TURN:
+                ret.message = "Move Made...";
+                break;
+            case _gameState.STATE.GAME_OVER:
+                if (ret.state.winner == TicTacToeGame.PLAYER_ONE) ret.message = "X wins!";else if (ret.state.winner == TicTacToeGame.PLAYER_TWO) ret.message = "O wins!";else ret.message = "Draw!";
+                break;
+        }
 
         return ret;
     }

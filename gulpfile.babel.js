@@ -26,7 +26,7 @@ gulp.task('run-tests', () => {
 });
 
 
-gulp.task('server-start', ['run-tests', 'transpile'], function() {
+gulp.task('server-start', ['transpile'], function() {
     if (node) node.kill();
     node = spawn('node', ['dist/index.js'], {stdio: 'inherit'});
     node.on('close', function (code) {
@@ -36,7 +36,9 @@ gulp.task('server-start', ['run-tests', 'transpile'], function() {
     });
 });
 
-gulp.task('default', ['server-start']);
+gulp.task('start-with-tests', ['run-tests', 'server-start']);
+
+gulp.task('default', ['start-with-tests']);
 
 process.on('exit', function() {
     if (node) node.kill();
