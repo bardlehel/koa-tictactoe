@@ -12,9 +12,9 @@ var _koa = require('koa');
 
 var _koa2 = _interopRequireDefault(_koa);
 
-var _koaHbs = require('koa-hbs');
+var _koaHandlebars = require('koa-handlebars');
 
-var _koaHbs2 = _interopRequireDefault(_koaHbs);
+var _koaHandlebars2 = _interopRequireDefault(_koaHandlebars);
 
 var _koaRouter = require('koa-router');
 
@@ -57,8 +57,8 @@ app.on('error', handleError);
 
 app.use((0, _koaRequestXhr2.default)());
 app.use((0, _koaStaticFolder2.default)('./src/public'));
-router.use(_koaHbs2.default.middleware({
-    viewPath: __dirname + '/../src/views'
+router.use((0, _koaHandlebars2.default)({
+    viewsDir: '/src/views'
 }));
 
 function getClientGameRole(clientIP) {

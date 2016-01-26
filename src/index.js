@@ -3,7 +3,7 @@
 import serve from 'koa-static-folder';
 import xhr from 'koa-request-xhr';
 import Koa from 'koa';
-import hbs from 'koa-hbs';
+import handlebars from "koa-handlebars";
 import KoaRouter from 'koa-router';
 import parse from 'co-body';
 import TicTacToeGame from './gamelib/tictactoeGame';
@@ -28,8 +28,8 @@ app.on('error', handleError);
 
 app.use(xhr());
 app.use(serve('./src/public'));
-router.use(hbs.middleware({
-    viewPath: __dirname + '/../src/views'
+router.use(handlebars({
+    viewsDir: '/src/views',
 }));
 
 function getClientGameRole(clientIP) {
