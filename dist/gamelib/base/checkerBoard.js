@@ -14,7 +14,11 @@ class CheckerBoard extends _gameData2.default {
     constructor(size, persistence) {
         super(persistence);
         this.data.size = size;
-        this.data.grid = [].fill(null, 0, size ^ 2);
+        this.data.grid = [];
+        for (var i = 0; i != 9; i++) {
+            this.data.grid[i] = null;
+        }
+        console.log(this.data.grid);
     }
 
     setSquare(x, y, val) {

@@ -7,26 +7,20 @@ import mocha from 'gulp-mocha';
 
 var node;
 
-gulp.task('transpile', () => {
-    return gulp.src('src/**/*.js')
-        .pipe(babel({
-            presets: ['es2015-node5']
-        }))
-        .pipe(gulp.dest('dist'));
-});
+gulp.task('transpile', ()=>
+         gulp.src('src/**/*.js')
+        .pipe(babel({presets: ['es2015-node5']}))
+        .pipe(gulp.dest('dist')));
 
-gulp.task('run-tests', () => {
-    return gulp.src('test/**/*.js')
-        .pipe(mocha({
-            compilers: 'js:babel-core/register'
-        }))
-        .once('error', () => {
-            process.exit(1);
-        });
-});
+gulp.task('unit-tests', ()=>
+        gulp.src('test/unit/**/*.js')
+        .pipe(mocha({compilers: 'js:babel-core/register'})));
 
+gulp.task('integration-tests', ()=>
+        gulp.src('test/integration/**/*.js')
+        .pipe(mocha({compilers: 'js:babel-core/register'})));
 
-gulp.task('server-start', ['transpile'], function() {
+function startServer(cb)  {
     if (node) node.kill();
     node = spawn('node', ['dist/index.js'], {stdio: 'inherit'});
     node.on('close', function (code) {
@@ -34,11 +28,21 @@ gulp.task('server-start', ['transpile'], function() {
             gulp.log('Error detected, waiting for changes...');
         }
     });
-});
+    cb();
+}
 
-gulp.task('start-with-tests', ['run-tests', 'server-start']);
+gulp.task('server-start',
+    gulp.series('transpile', startServer)
+);
 
-gulp.task('default', ['start-with-tests']);
+gulp.task('start-with-tests',
+    gulp.series(
+        'unit-tests',
+        'integration-tests',
+        'server-start'
+    ));
+
+gulp.task('default', gulp.series('start-with-tests'));
 
 process.on('exit', function() {
     if (node) node.kill();

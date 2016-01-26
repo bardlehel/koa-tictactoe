@@ -32,6 +32,9 @@ class TicTacToeGame extends _game2.default {
     static get BOARD_SIZE() {
         return 3;
     }
+    static get SPECTATOR() {
+        return -1;
+    }
     static get PLAYER_ONE() {
         return 0;
     }
@@ -93,14 +96,14 @@ class TicTacToeGame extends _game2.default {
         let ret = {};
 
         ret.board = this.board.data.grid;
-        ret.state = super.getState();
+        ret.state = this.getState();
 
         switch (ret.state.state) {
             case _gameState.STATE.WAITING_ON_PLAYER:
                 ret.message = "Waiting on Player 2...";
                 break;
             case _gameState.STATE.PLAYER_TURN:
-                if (ret.state.playerTurn == TicTacToeGame.PLAYER_ONE) ret.message = "X to move!";else ret.message = "O to move!";
+                if (ret.state.turn == TicTacToeGame.PLAYER_ONE) ret.message = "X to move!";else ret.message = "O to move!";
                 break;
             case _gameState.STATE.PLAYER_FINISHED_TURN:
                 ret.message = "Move Made...";
@@ -110,6 +113,7 @@ class TicTacToeGame extends _game2.default {
                 break;
         }
 
+        console.log(ret);
         return ret;
     }
 
@@ -138,7 +142,7 @@ class TicTacToeGame extends _game2.default {
     }
 
     doGameLogicStep() {
-        switch (this.gameState.state) {
+        switch (this.getState().state) {
             case _gameState.STATE.NOT_STARTED:
                 if (this.joinedPlayers.size > 0) {
                     this.setState(_gameState.STATE.WAITING_ON_PLAYER);

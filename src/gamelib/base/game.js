@@ -48,17 +48,13 @@ class Game {
     }
 
     getState() {
-        return {
-            state: this.gameState.state,
-            playerTurn: this.gameState.player,
-            winner: this.gameState.winner
-        };
+        return this.gameState.data;
     }
 
-    setState(state, player, winner) {
-        this.gameState.state = state;
-        this.gameState.player = player;
-        this.gameState.winner = winner;
+    setState(state, turn, winner) {
+        this.gameState.data.state = state;
+        this.gameState.data.turn = turn;
+        this.gameState.data.winner = winner;
         this.gameState.save();
     }
 

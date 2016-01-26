@@ -6,7 +6,9 @@ class CheckerBoard extends GameData {
     constructor(size, persistence) {
         super(persistence);
         this.data.size = size;
-        this.data.grid = [].fill(null, 0, size ^ 2);
+        this.data.grid = [];
+        for(var i=0; i!=9;i++) {this.data.grid[i] = null; }
+        console.log(this.data.grid);
     }
 
     setSquare(x, y, val) {
@@ -54,7 +56,7 @@ class CheckerBoard extends GameData {
         return iter;
     }
 
-    getFilledSquares(val = null) {
+    getFilledSquares(val=null) {
         let count = 0;
         for (let square of this.IterableSquares) {
             if (square) {

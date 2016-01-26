@@ -13,6 +13,7 @@ class TicTacToeGame extends Game {
 
     static get TOTAL_PLAYERS() { return 2; }
     static get BOARD_SIZE() { return 3; }
+    static get SPECTATOR() { return -1; }
     static get PLAYER_ONE() { return 0; }
     static get PLAYER_TWO() { return TicTacToeGame.PLAYER_ONE + 1; }
     static get NO_WINNER() { return -1; }
@@ -72,14 +73,14 @@ class TicTacToeGame extends Game {
         let ret = {};
 
         ret.board = this.board.data.grid;
-        ret.state = super.getState();
+        ret.state = this.getState();
 
         switch(ret.state.state) {
             case STATE.WAITING_ON_PLAYER:
                 ret.message = "Waiting on Player 2...";
                 break;
             case STATE.PLAYER_TURN:
-                if(ret.state.playerTurn == TicTacToeGame.PLAYER_ONE)
+                if(ret.state.turn == TicTacToeGame.PLAYER_ONE)
                     ret.message = "X to move!";
                 else
                     ret.message = "O to move!"
@@ -97,6 +98,7 @@ class TicTacToeGame extends Game {
                 break;
         }
 
+        console.log(ret);
         return ret;
     }
 
@@ -134,7 +136,7 @@ class TicTacToeGame extends Game {
     }
 
     doGameLogicStep() {
-        switch(this.gameState.state) {
+        switch(this.getState().state) {
             case STATE.NOT_STARTED:
                 if(this.joinedPlayers.size > 0) {
                     this.setState(STATE.WAITING_ON_PLAYER);

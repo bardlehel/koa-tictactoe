@@ -8,7 +8,7 @@ To run:
     2) Execute Commands:
         npm install
         bower install
-        gulp
+        npm run gulp
 
 To play:
     * Players are defined by their IP address

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "gulp": "./node_modules/gulp/bin/gulp.js"
   },
   "repository": {
     "type": "git",
@@ -28,32 +28,35 @@
     "babel-polyfill": "^6.3.14",
     "babel-preset-es2015-node5": "^1.1.2",
     "chai": "^3.4.1",
+    "co-supertest": "0.0.10",
     "es6-module-loader": "^0.17.10",
     "es6-module-transpiler": "^0.10.0",
     "eslint": "^1.10.3",
     "eslint-plugin-import": "^0.12.1",
-    "gulp": "^3.9.0",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^6.1.1",
     "gulp-es6-module-transpiler": "^0.2.2",
+    "gulp-exit": "0.0.2",
     "gulp-mocha": "^2.2.0",
+    "gulp-mocha-co": "^0.4.1-co.3",
     "gulp-util": "^3.0.7",
     "kerberos": "0.0.17",
     "mocha": "^2.3.4",
-    "npm": "^3.5.3",
+    "supertest": "^1.1.0",
     "uninstall": "0.0.0-reserved"
   },
   "dependencies": {
     "co": "^4.6.0",
     "co-body": "^4.0.0",
-    "enum": "^2.3.0",
+    "enumify": "^1.0.4",
     "handlebars": "^4.0.5",
     "koa": "^1.1.2",
+    "koa-handlebars": "^0.5.7",
     "koa-hbs": "^0.7.0",
     "koa-request-xhr": "^1.0.1",
     "koa-router": "^5.3.0",
     "koa-static-folder": "^0.1.6",
     "mongoose": "^4.3.6",
-    "node": "^5.0.0",
     "underscore": "^1.8.3"
   }
 }

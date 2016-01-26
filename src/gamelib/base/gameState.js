@@ -1,17 +1,18 @@
 "use strict";
 
-import Enum from "enum";
+import {Enum} from 'enumify';
 import GameData from './gameData';
 
-Enum.register();
-
-const STATE =
-    new Enum(
+class STATE extends Enum {}
+STATE.initEnum(
+    [
         'NOT_STARTED',
         'WAITING_ON_PLAYER',
         'PLAYER_TURN',
         'PLAYER_FINISHED_TURN',
-        'GAME_OVER');
+        'GAME_OVER'
+    ]);
+
 
 class GameState extends GameData {
 
@@ -33,13 +34,13 @@ class GameState extends GameData {
             throw new Error('invalid player number');
         }
 
-        this.state = STATE.PLAYER_TURN;
+        this.data.state = STATE.PLAYER_TURN;
         this.turn = player;
         this.save();
     }
 
     getPlayerTurn() {
-        return this.turn;
+        return this.data.turn;
     }
 
 }
