@@ -32,6 +32,10 @@ var _persistence = require('./gamelib/base/persistence');
 
 var _persistence2 = _interopRequireDefault(_persistence);
 
+var _TicTacToeGameState = require('./models/TicTacToeGameState');
+
+var _TicTacToeGameState2 = _interopRequireDefault(_TicTacToeGameState);
+
 var _config = require('./config/config');
 
 var _config2 = _interopRequireDefault(_config);
@@ -44,7 +48,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 let app = module.exports = (0, _koa2.default)();
 let router = (0, _koaRouter2.default)();
-let persistence = new _persistence2.default(_config2.default.mongodb);
+let persistence = new _persistence2.default(_config2.default.mongodb, _TicTacToeGameState2.default);
 let game = new _tictactoeGame2.default(persistence);
 app.game = game;
 
@@ -56,9 +60,11 @@ function handleError(err) {
 app.on('error', handleError);
 
 app.use((0, _koaRequestXhr2.default)());
-app.use((0, _koaStaticFolder2.default)('./src/public'));
+app.use((0, _koaStaticFolder2.default)('./public'));
 router.use((0, _koaHandlebars2.default)({
-    viewsDir: '/src/views'
+    viewsDir: '/src/views',
+    layoutsDir: '/src/layouts',
+    defaultLayout: 'main'
 }));
 
 function getClientGameRole(clientIP) {
@@ -95,19 +101,21 @@ router.get('/', function* () {
 
     let data = getDataForClient(this.ip);
     this.status = 200;
-    let x = yield this.render('game', {});
-    console.log(x);
-    this.body = yield this.render('game', data);
+    yield this.render("index", {
+        data: data,
+        ajaxEndpoint: this.request.origin + '/ajax'
+    });
 });
 
 router.post('/', function* () {
     console.log('handling POST /');
     let role = getClientGameRole(this.ip);
-    let data = (0, _coBody2.default)(this);
+    let data = yield (0, _coBody2.default)(this);
 
     if (role == _tictactoeGame2.default.SPECTATOR) return;
+    let squareNum = parseInt(data.square);
 
-    game.board.setSquare(data.square, role);
+    game.board.setSquare(squareNum, role);
     game.doGameLogicStep();
 
     this.status = 200;
@@ -117,16 +125,16 @@ router.post('/', function* () {
 router.get('/ajax', function* () {
     console.log('handling GET /ajax/');
 
-    if (this.request.xhr) {
-        console.log('before');
-        this.body = getDataForClient(this.ip);
-        this.status = 200;
-    }
+    this.status = 200;
+    yield this.body = {
+        data: getDataForClient(this.ip),
+        ajaxEndpoint: this.request.origin + '/ajax'
+    };
 });
 
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(_config2.default.port, '192.168.0.4', function (err) {
+app.listen(_config2.default.port, 'localhost', function (err) {
     if (err) handleError(err);
 
     console.log('listening on Port:' + _config2.default.port);

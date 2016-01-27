@@ -8,13 +8,14 @@ import KoaRouter from 'koa-router';
 import parse from 'co-body';
 import TicTacToeGame from './gamelib/tictactoeGame';
 import Persistence from './gamelib/base/persistence';
+import GameSchema from './models/TicTacToeGameState';
 import config from './config/config';
 import 'babel-core/register';
 import 'babel-polyfill';
 
 let app = module.exports = Koa();
 let router = KoaRouter();
-let persistence = new Persistence(config.mongodb);
+let persistence = new Persistence(config.mongodb, GameSchema);
 let game = new TicTacToeGame(persistence);
 app.game = game;
 
@@ -27,9 +28,11 @@ app.on('error', handleError);
 
 
 app.use(xhr());
-app.use(serve('./src/public'));
+app.use(serve('./public'));
 router.use(handlebars({
     viewsDir: '/src/views',
+    layoutsDir: '/src/layouts',
+    defaultLayout: 'main'
 }));
 
 function getClientGameRole(clientIP) {
@@ -67,20 +70,22 @@ router.get('/', function* () {
 
     let data = getDataForClient(this.ip);
     this.status = 200;
-    let x = yield this.render('game', {});
-    console.log(x);
-    this.body = yield this.render('game', data);
+    yield this.render("index", {
+        data: data,
+        ajaxEndpoint: this.request.origin + '/ajax'
+    });
 });
 
 router.post('/', function* () {
     console.log('handling POST /');
     let role = getClientGameRole(this.ip);
-    let data = parse(this);
+    let data = yield parse(this);
 
     if(role == TicTacToeGame.SPECTATOR)
         return;
+    let squareNum = parseInt(data.square);
 
-    game.board.setSquare(data.square, role);
+    game.board.setSquare(squareNum, role);
     game.doGameLogicStep();
 
     this.status = 200;
@@ -90,18 +95,18 @@ router.post('/', function* () {
 router.get('/ajax', function* (){
     console.log('handling GET /ajax/');
 
-    if (this.request.xhr) {
-        console.log('before');
-        this.body = getDataForClient(this.ip);
         this.status = 200;
-    }
+        yield this.body =  {
+            data: getDataForClient(this.ip),
+            ajaxEndpoint: this.request.origin + '/ajax'
+        };
 });
 
 app
     .use(router.routes())
     .use(router.allowedMethods());
 
-app.listen(config.port, '192.168.0.4', function(err) {
+app.listen(config.port, 'localhost', function(err) {
     if(err) handleError(err);
 
     console.log('listening on Port:' + config.port);

@@ -1,9 +1,8 @@
 "use strict";
 
 
-import mongoose from "mongoose";
-import Schema from "mongoose.Schema";
-import Document from 'mongoose.Document';
+import mongoose from 'mongoose';
+import {Schema, Document} from 'mongoose';
 
 var TicTacToeDataSchema = new Schema({
     state: String,

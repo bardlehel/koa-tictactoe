@@ -113,7 +113,6 @@ class TicTacToeGame extends _game2.default {
                 break;
         }
 
-        console.log(ret);
         return ret;
     }
 

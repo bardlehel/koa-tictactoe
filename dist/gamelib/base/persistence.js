@@ -16,8 +16,6 @@ let _mongoSchema = Symbol();
 let _mongoDocumentID = Symbol();
 let _gameDataDocument = Symbol();
 
-const DEFAULT_COLLECTION_NAME = 'game';
-
 class Persistence {
 
     constructor(mongoURI, schema) {

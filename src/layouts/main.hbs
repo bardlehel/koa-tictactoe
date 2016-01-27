@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/public/vendor/jQuery/dist/jquery.min.js"></script>
+    <script src="/public/vendor/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/public/script.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/public/style.css" />
+
+    <title>Lehel's Tic Tac Toe!</title>
+</head>
+<body>
+<div class="header">
+    <h1>Lehel's Tic Tac Toe!</h1>
+</div>
+<div id="main-section">
+{{{@body}}}
+</div>
+<script type="text/javascript">
+    xImagePath = "/public/images/X.jpg";
+    oImagePath = "/public/images/O.jpg";
+    ajaxUrl = "{{ ajaxEndpoint }}";
+</script>
+
+</body>
+</html>

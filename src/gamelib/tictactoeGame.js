@@ -98,7 +98,6 @@ class TicTacToeGame extends Game {
                 break;
         }
 
-        console.log(ret);
         return ret;
     }
 
