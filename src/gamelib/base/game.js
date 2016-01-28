@@ -7,6 +7,7 @@ import Player from './player';
 //private properties:
 let _players = Symbol();
 let _totalPlayers = Symbol();
+let _persistence = Symbol();
 
 class Game {
     constructor(persistence) {

@@ -2,10 +2,11 @@
 
 import GameData from './gameData';
 
+const BOARD_KEY = 'board';
 
 class CheckerBoard extends GameData {
     constructor(size, persistence) {
-        super(persistence);
+        super(persistence, BOARD_KEY);
         this.data.boardSize = size;
         this.data.grid = [];
         for(var i=0; i!=9;i++) {this.data.grid[i] = null; }
@@ -13,10 +14,11 @@ class CheckerBoard extends GameData {
 
 
     setSquare(n, val) {
-        if (isNaN(n) || n < 1 || n >= Math.pow(this.data.boardSize, 2))
+        if (isNaN(n) || n < 1 || n > Math.pow(this.data.boardSize, 2))
             throw new Error('bad index for board');
 
         this.data.grid[n - 1] = val;
+        this.save().next();
     }
 
 

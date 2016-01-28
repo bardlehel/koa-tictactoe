@@ -10,9 +10,11 @@ var _gameData2 = _interopRequireDefault(_gameData);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+const BOARD_KEY = 'board';
+
 class CheckerBoard extends _gameData2.default {
     constructor(size, persistence) {
-        super(persistence);
+        super(persistence, BOARD_KEY);
         this.data.boardSize = size;
         this.data.grid = [];
         for (var i = 0; i != 9; i++) {
@@ -21,9 +23,10 @@ class CheckerBoard extends _gameData2.default {
     }
 
     setSquare(n, val) {
-        if (isNaN(n) || n < 1 || n >= Math.pow(this.data.boardSize, 2)) throw new Error('bad index for board');
+        if (isNaN(n) || n < 1 || n > Math.pow(this.data.boardSize, 2)) throw new Error('bad index for board');
 
         this.data.grid[n - 1] = val;
+        this.save().next();
     }
 
     getSquare(n) {

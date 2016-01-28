@@ -52,7 +52,7 @@ class TicTacToeGame extends _game2.default {
         if (!persistence) throw new Error("persistence object required!");
 
         super(persistence);
-        this.setupGame();
+        this.setupGame(persistence);
         _gameInstance = this;
     }
 
@@ -60,15 +60,38 @@ class TicTacToeGame extends _game2.default {
         return _gameInstance;
     }
 
+    *loadLastGameIfUnfinished(persistence) {
+        if (yield this.lastGameUnfinished(persistence)) {
+            yield this.board.load();
+            yield this.gameState.load();
+        }
+    }
+
+    *lastGameUnfinished(persistence) {
+        try {
+            yield persistence.loadLastGameDocument();
+        } catch (err) {
+            return false;
+        }
+
+        if (persistence.loadGameData('state').state != _gameState.STATE.GAME_OVER) return true;
+
+        return false;
+    }
+
     getIPAddressForPlayer(num) {
         if (isNaN(num) || num < 0 || num > 1) throw new Error('bad player number');
         return super.getPlayerByIndex(num).ipAddress;
     }
 
-    setupGame() {
+    setupGame(persistence) {
         this.joinedPlayers = new Map();
         this.board = new _checkerBoard2.default(TicTacToeGame.BOARD_SIZE);
-        super.createNewGame(TicTacToeGame.TOTAL_PLAYERS);
+
+        if (!this.loadLastGameIfUnfinished().next()) {
+            persistence.createNewGameDocument().next();
+            super.createNewGame(TicTacToeGame.TOTAL_PLAYERS);
+        }
     }
 
     registerPlayer(ipAddr) {

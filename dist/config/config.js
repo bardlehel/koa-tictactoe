@@ -5,5 +5,5 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = {
   "port": 8000,
-  "mongodb": "http://localhost/tictactoe"
+  "mongodb": "mongodb://localhost/tictactoe"
 };

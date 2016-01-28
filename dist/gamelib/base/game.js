@@ -21,6 +21,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //private properties:
 let _players = Symbol();
 let _totalPlayers = Symbol();
+let _persistence = Symbol();
 
 class Game {
     constructor(persistence) {

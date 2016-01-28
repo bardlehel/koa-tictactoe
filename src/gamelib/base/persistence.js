@@ -7,6 +7,7 @@ let _mongooseConn = Symbol();
 let _mongoSchema = Symbol();
 let _mongoDocumentID = Symbol();
 let _gameDataDocument = Symbol();
+let _shouldLoad = Symbol();
 
 class Persistence {
 
@@ -14,16 +15,16 @@ class Persistence {
         this[_mongoDocumentID] = null;
         this[_mongoSchema] = schema;
         this.connect(mongoURI);
+        console.log('connected to ' + mongoURI);
     }
 
     *connect(mongoConnURI) {
         this[_mongooseConn] = yield mongoose.connect(mongoConnURI);
-        this[_gameDataDocument] = yield this.getNewGameDocument();
-        this[_mongoDocumentID] = this[_gameDataDocument].id;
     }
 
-    *getNewGameDocument() {
-        return yield this[_mongoSchema].create({ started: new Date() });
+    *createNewGameDocument() {
+        this[_gameDataDocument] = yield this[_mongoSchema].create({ started: new Date() });
+        this[_mongoDocumentID] = this[_gameDataDocument].id;
     }
 
     *saveGameData(key, val) {
@@ -37,6 +38,26 @@ class Persistence {
             throw err;
         }
     }
+
+    *loadGameData(key) {
+        return this[_gameDataDocument][key];
+    }
+
+    clearGameDocument() {
+        this[_gameDataDocument] = null;
+    }
+
+    *loadLastGameDocument() {
+        this[_gameDataDocument] = null;
+        this[_gameDataDocument] = yield this[_mongoSchema].findOne().sort({created_at: -1}).exec();
+
+        if(!this[_gameDataDocument])
+            throw new Error('could not find record in database');
+
+        this[_mongoDocumentID] = this[_gameDataDocument].id;
+    }
+
+
 
 
 

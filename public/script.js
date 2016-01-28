@@ -14,6 +14,9 @@ const PLAYER_O = 1;
 
 function updateGame(gameData) {
 
+    $('#loading-message').hide();
+    $('#main-section').show();
+
     if(!gameData || !gameData.data)
         return;
 
@@ -58,7 +61,8 @@ function updateGame(gameData) {
 }
 
 $(document).ready(function() {
-    updateGame(context);
+
+    $('#main-section').hide();
 
     timer = setInterval(function() {
         $.getJSON(ajaxUrl, function(data) {

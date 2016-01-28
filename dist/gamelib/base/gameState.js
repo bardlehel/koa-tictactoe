@@ -16,10 +16,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class STATE extends _enumify.Enum {}
 STATE.initEnum(['NOT_STARTED', 'WAITING_ON_PLAYER', 'PLAYER_TURN', 'GAME_OVER']);
 
+const STATE_KEY = 'state';
+
 class GameState extends _gameData2.default {
 
     constructor(gameInstance, persistence) {
-        super(persistence);
+        super(persistence, STATE_KEY);
         this.game = gameInstance;
         this.reset();
     }
@@ -28,7 +30,7 @@ class GameState extends _gameData2.default {
         this.data.state = STATE.NOT_STARTED;
         this.data.turn = 1;
         this.data.winner = null;
-        this.save();
+        this.save().next();
     }
 
     setPlayerTurn(player) {
@@ -38,7 +40,7 @@ class GameState extends _gameData2.default {
 
         this.data.state = STATE.PLAYER_TURN;
         this.data.turn = player;
-        this.save();
+        this.save().next();
     }
 
     getPlayerTurn() {
