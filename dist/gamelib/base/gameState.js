@@ -14,7 +14,7 @@ var _gameData2 = _interopRequireDefault(_gameData);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class STATE extends _enumify.Enum {}
-STATE.initEnum(['NOT_STARTED', 'WAITING_ON_PLAYER', 'PLAYER_TURN', 'PLAYER_FINISHED_TURN', 'GAME_OVER']);
+STATE.initEnum(['NOT_STARTED', 'WAITING_ON_PLAYER', 'PLAYER_TURN', 'GAME_OVER']);
 
 class GameState extends _gameData2.default {
 
@@ -32,12 +32,12 @@ class GameState extends _gameData2.default {
     }
 
     setPlayerTurn(player) {
-        if (isNan(player) || player < 1 || player > this.game.PlayerCount) {
+        if (isNan(player) || player < 1 || player > this.game.TotalPlayers) {
             throw new Error('invalid player number');
         }
 
         this.data.state = STATE.PLAYER_TURN;
-        this.turn = player;
+        this.data.turn = player;
         this.save();
     }
 

@@ -90,7 +90,7 @@ router.get('/', function* () {
 
     console.log('handling GET /');
 
-    //Determnextsine if ip is new and who it belongs to (player1, player2 or spectator)
+    //Determine if ip is new and who it belongs to (player1, player2 or spectator)
     if (!game.getIPAddressForPlayer(_tictactoeGame2.default.PLAYER_ONE) || !game.getIPAddressForPlayer(_tictactoeGame2.default.PLAYER_TWO)) {
 
         game.registerPlayer(this.ip);
@@ -113,9 +113,15 @@ router.post('/', function* () {
     let data = yield (0, _coBody2.default)(this);
 
     if (role == _tictactoeGame2.default.SPECTATOR) return;
-    let squareNum = parseInt(data.square);
 
+    if (game.getPlayerTurn() !== role) return;
+
+    let squareNum = parseInt(data.square);
+    if (isNaN(squareNum) || squareNum < 0 || squareNum > 9) return;
+
+    console.log(squareNum);
     game.board.setSquare(squareNum, role);
+    console.log('after setSquare');
     game.doGameLogicStep();
 
     this.status = 200;
@@ -126,6 +132,7 @@ router.get('/ajax', function* () {
     console.log('handling GET /ajax/');
 
     this.status = 200;
+
     yield this.body = {
         data: getDataForClient(this.ip),
         ajaxEndpoint: this.request.origin + '/ajax'
@@ -134,7 +141,7 @@ router.get('/ajax', function* () {
 
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(_config2.default.port, 'localhost', function (err) {
+app.listen(_config2.default.port, '0.0.0.0', function (err) {
     if (err) handleError(err);
 
     console.log('listening on Port:' + _config2.default.port);

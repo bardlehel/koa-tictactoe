@@ -103,10 +103,8 @@ class TicTacToeGame extends _game2.default {
                 ret.message = "Waiting on Player 2...";
                 break;
             case _gameState.STATE.PLAYER_TURN:
+                console.log('turn = ' + ret.state.turn);
                 if (ret.state.turn == TicTacToeGame.PLAYER_ONE) ret.message = "X to move!";else ret.message = "O to move!";
-                break;
-            case _gameState.STATE.PLAYER_FINISHED_TURN:
-                ret.message = "Move Made...";
                 break;
             case _gameState.STATE.GAME_OVER:
                 if (ret.state.winner == TicTacToeGame.PLAYER_ONE) ret.message = "X wins!";else if (ret.state.winner == TicTacToeGame.PLAYER_TWO) ret.message = "O wins!";else ret.message = "Draw!";
@@ -118,9 +116,9 @@ class TicTacToeGame extends _game2.default {
 
     //return true if all squares are filled or 3-in-a-row exists
     isGameOver() {
-        if (this.board.getFilledSquares() == TicTacToeGame.BOARD_SIZE ^ 2) {
+        if (this.board.getFilledSquares() === Math.pow(TicTacToeGame.BOARD_SIZE, 2)) {
             return true;
-        } else if (this.getWinner() != TicTacToeGame.NO_WINNER) {
+        } else if (this.getWinner() !== TicTacToeGame.NO_WINNER) {
             return true;
         }
 
@@ -128,16 +126,27 @@ class TicTacToeGame extends _game2.default {
     }
 
     getWinner() {
-        let winner = TicTacToeGame.NO_WINNER;
 
-        for (let i = 0; i < 3; i++) if (this.board.getSquare(i, 0) === this.board.getSquare(i, 1) && this.board.getSquare(i, 1) === this.board.getSquare(i, 2)) ;
-        winner = this.board.getSquare(i, 0);
+        for (let i = 0; i < 3; i++) {
+            if (this.board.getSquareByXY(i, 0) !== null && this.board.getSquareByXY(i, 0) === this.board.getSquareByXY(i, 1) && this.board.getSquareByXY(i, 1) === this.board.getSquareByXY(i, 2)) {
+                return this.board.getSquareByXY(i, 0);
+            }
+        }
 
-        for (let i = 0; i < 3; i++) if (this.board.getSquare(0, i) === this.board.getSquare(1, i) && this.board.getSquare(1, i) === this.board.getSquare(2, i)) winner = this.board.getSquare(0, i);
+        for (let i = 0; i < 3; i++) {
+            if (this.board.getSquareByXY(0, i) !== null && this.board.getSquareByXY(0, i) === this.board.getSquareByXY(1, i) && this.board.getSquareByXY(1, i) === this.board.getSquareByXY(2, i)) {
+                return this.board.getSquareByXY(0, i);
+            }
+        }
 
-        if (this.board.getSquare(0, 0) === this.board.getSquare(1, 1) && this.board.getSquare(1, 1) === this.board.getSquare(2, 2) || this.board.getSquare(0, 2) === this.board.getSquare(1, 1) && this.board.getSquare(1, 1) === this.board.getSquare(2, 0)) winner = this.board.getSquare(1, 1);
+        if (this.board.getSquareByXY(0, 0) !== null && this.board.getSquareByXY(0, 0) === this.board.getSquareByXY(1, 1) && this.board.getSquareByXY(1, 1) === this.board.getSquareByXY(2, 2)) {
+            return this.board.getSquareByXY(0, 0);
+        }
+        if (this.board.getSquareByXY(0, 2) !== null && this.board.getSquareByXY(0, 2) === this.board.getSquareByXY(1, 1) && this.board.getSquareByXY(1, 1) === this.board.getSquareByXY(2, 0)) {
+            return this.board.getSquareByXY(0, 2);
+        }
 
-        return winner;
+        return TicTacToeGame.NO_WINNER;
     }
 
     doGameLogicStep() {
@@ -155,24 +164,25 @@ class TicTacToeGame extends _game2.default {
             case _gameState.STATE.PLAYER_TURN:
                 let playerOneTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_ONE);
                 let playerTwoTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_TWO);
-                if (this.gameState.getPlayerTurn() == TicTacToeGame.PLAYER_ONE && playerOneTurnCount > playerTwoTurnCount) {
-
-                    //check if game is over?
-                    if (this.isGameOver()) {
-                        this.setState(_gameState.STATE.GAME_OVER, null, TicTacToeGame.getWinner());
-                        break;
-                    }
-
-                    this.setState(_gameState.STATE.PLAYER_TURN, TicTacToeGame.PLAYER_TWO);
-                } else if (this.gameState.getPlayerTurn() == TicTacToeGame.PLAYER_TWO && playerOneTurnCount === playerTwoTurnCount) {
-
-                    //check if game is over?
+                console.log('x = ' + playerOneTurnCount + ' o=' + playerTwoTurnCount);
+                if (this.getPlayerTurn() == TicTacToeGame.PLAYER_ONE && playerOneTurnCount > playerTwoTurnCount) {
                     if (this.isGameOver()) {
                         this.setState(_gameState.STATE.GAME_OVER, null, this.getWinner());
                         break;
                     }
 
+                    this.setState(_gameState.STATE.PLAYER_TURN, TicTacToeGame.PLAYER_TWO);
+                } else if (this.getPlayerTurn() == TicTacToeGame.PLAYER_TWO && playerOneTurnCount === playerTwoTurnCount) {
+                    //check if game is over?
+                    console.log(1);
+                    if (this.isGameOver()) {
+                        this.setState(_gameState.STATE.GAME_OVER, null, this.getWinner());
+                        break;
+                    }
+                    console.log(2);
+
                     this.setState(_gameState.STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
+                    console.log(3);
                 }
                 break;
             case _gameState.STATE.GAME_OVER:

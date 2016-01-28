@@ -35,22 +35,24 @@ function updateGame(gameData) {
 
     if(clientRole === PLAYER_X)
         roleText = 'You are X';
-    else if(clientRole = PLAYER_Y)
+    else if(clientRole = PLAYER_O)
         roleText = 'Your are O';
 
     $("#role").html(roleText);
     $("#message").html(message);
 
-    for (let square = 1; i < board.length; square++) {
-        if(board[square] === 'X') {
-            $("#box" + square).prepend('<img src="' + xImagePath + '" />');
-            $("#box" + square).data('state', 'x');
-        } else if(board[square] === 'O') {
-            $("#box" + square).prepend('<img src="' + oImagePath + '" />');
-            $("#box" + square).data('state', 'o');
+    for (let square = 0; square < board.length; square++) {
+        let boxIndex = square + 1;
+
+        if(board[square] === PLAYER_X) {
+            $("#box" + boxIndex).html('<img src="' + xImagePath + '" />');
+            $("#box" + boxIndex).data('state', 'x');
+        } else if(board[square] === PLAYER_O) {
+            $("#box" + boxIndex).html('<img src="' + oImagePath + '" />');
+            $("#box" + boxIndex).data('state', 'o');
         } else {
-            $("#box" + square).empty();
-            $("#box" + square).data('state', null);
+            $("#box" + boxIndex).html();
+            $("#box" + boxIndex).data('state', null);
         }
     }
 }
@@ -60,8 +62,7 @@ $(document).ready(function() {
 
     timer = setInterval(function() {
         $.getJSON(ajaxUrl, function(data) {
-            alert(data);
-            updateBoard(data);
+            updateGame(data);
         });
     }, 3000);
 
@@ -77,9 +78,7 @@ $(document).ready(function() {
         let squareNum = $(this).attr('id').substring(3,4);
         let newUrl = ajaxUrl.replace('ajax', '');
         $.post( newUrl, { square: squareNum }, function (data, status) {
-            alert('after data');
-            alert(data);
             updateGame(data);
-        }).fail(function(err){alert(err)});
+        });
     });
 });

@@ -9,7 +9,6 @@ STATE.initEnum(
         'NOT_STARTED',
         'WAITING_ON_PLAYER',
         'PLAYER_TURN',
-        'PLAYER_FINISHED_TURN',
         'GAME_OVER'
     ]);
 
@@ -30,12 +29,12 @@ class GameState extends GameData {
     }
 
     setPlayerTurn(player) {
-        if(isNan(player) || player < 1 || player > this.game.PlayerCount) {
+        if(isNan(player) || player < 1 || player > this.game.TotalPlayers) {
             throw new Error('invalid player number');
         }
 
         this.data.state = STATE.PLAYER_TURN;
-        this.turn = player;
+        this.data.turn = player;
         this.save();
     }
 

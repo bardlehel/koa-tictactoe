@@ -44,4 +44,10 @@ describe('TicTacToeGame', function() {
             expect(game.getPlayerByIndex(TicTacToeGame.PLAYER_ONE).ipAddress).to.equal(ip);
         });
     });
+
+    describe('isGameOver', function() {
+        it('should return false if game just started', function() {
+            expect(game.isGameOver()).to.be.false;
+        });
+    });
 });

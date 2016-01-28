@@ -38,6 +38,8 @@ class Game {
             this[_players].push(new _player2.default());
         }
 
+        this[_totalPlayers] = numPlayers;
+
         this.gameState.reset();
     }
 
@@ -57,8 +59,16 @@ class Game {
         return this[_players];
     }
 
+    get TotalPlayers() {
+        return this[_totalPlayers];
+    }
+
     getState() {
         return this.gameState.data;
+    }
+
+    getPlayerTurn() {
+        return this.gameState.getPlayerTurn();
     }
 
     setState(state, turn, winner) {
