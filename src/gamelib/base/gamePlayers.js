@@ -49,10 +49,19 @@ class GamePlayers extends GameData {
     *load() {
         yield super.load();
 
-
+        //set each player = object data in this.data array
+        for(let i = 0; i < this.data.length; i++) {
+            this[_players][i] = new Player(this.data[i]);
+        }
     }
 
     *save() {
+        //set this.data = array of player objects
+        this.data = [];
+        this[_players].forEach(function(el) {
+            this.data.push(el.data);
+        });
+
         yield super.save();
     }
 }

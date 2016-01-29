@@ -11,30 +11,13 @@ class GameData {
         this.persister = persistence;
     }
 
-    save() {
-        let _this = this;
+    *save() {
         console.log('saving gamedata...');
-
-        co(function* () {
-            yield _this.persister.saveGameData(_this[_key], _this.data);
-        }).then(function (value) {},
-            function (err) {
-                console.error(err.stack);
-                throw new Error('persistence::saveGameData failed');
-            });
-
+        yield this.persister.saveGameData(this[_key], this.data);
     }
 
     *load() {
-        let _this = this;
-
-        co(function* () {
-            _this.data = yield _this.persister.loadGameData(_this[_key]);
-        }).then(function (value) {},
-            function (err) {
-                console.error(err.stack);
-                throw new Error('persistence::loadGameData failed');
-            });
+        this.data = yield this.persister.loadGameData(this[_key]);
     }
 };
 

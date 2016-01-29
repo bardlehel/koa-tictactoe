@@ -26,15 +26,15 @@ class Game {
         return this.gameState.getPlayerTurn();
     }
 
-    setState(state, turn, winner) {
+    *setState(state, turn, winner) {
         this.gameState.data.state = state;
         this.gameState.data.turn = turn;
         this.gameState.data.winner = winner;
-        this.gameState.save();
+        yield this.gameState.save();
     }
 
     //must be overridden and defined by subclass
-    doGameLogicStep() {}
+    *doGameLogicStep() {}
 };
 
 export default Game;

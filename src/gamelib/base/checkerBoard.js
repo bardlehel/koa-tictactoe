@@ -13,13 +13,13 @@ class CheckerBoard extends GameData {
     }
 
 
-    setSquare(n, val) {
+    *setSquare(n, val) {
         if (isNaN(n) || n < 1 || n > Math.pow(this.data.boardSize, 2))
             throw new Error('bad index for board');
 
         this.data.grid[n - 1] = val;
 
-        this.save();
+        yield this.save();
     }
 
 

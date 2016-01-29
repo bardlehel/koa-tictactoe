@@ -45,6 +45,12 @@ class TicTacToeGame extends Game {
                 yield persistence.loadLastGameDocument();
                 if(persistence.getGameData(STATE_KEY).state == STATE.GAME_OVER)
                     yield persistence.createNewGameDocument();
+                else {
+                    yield this.board.load();
+                    yield this.players.load();
+                    yield this.gameState.load();
+                }
+
             } catch(err) {
                 yield persistence.createNewGameDocument();
             }
@@ -68,8 +74,8 @@ class TicTacToeGame extends Game {
         player.ipAddress = ipAddr;
     }
 
-    setState(state, player=null, winner=null) {
-        super.setState(state, player, winner);
+    *setState(state, player=null, winner=null) {
+        yield super.setState(state, player, winner);
     }
 
     getGameData() {
@@ -148,16 +154,16 @@ class TicTacToeGame extends Game {
 
     }
 
-    doGameLogicStep() {
+    *doGameLogicStep() {
         switch(this.getState().state) {
             case STATE.NOT_STARTED:
                 if(this.players.numJoined > 0) {
-                    this.setState(STATE.WAITING_ON_PLAYER);
+                    yield this.setState(STATE.WAITING_ON_PLAYER);
                 }
                 break;
             case STATE.WAITING_ON_PLAYER:
                 if(this.players.numJoined === 2) {
-                    this.setState(STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
+                    yield this.setState(STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
                 }
                 break;
             case STATE.PLAYER_TURN:
@@ -167,7 +173,7 @@ class TicTacToeGame extends Game {
                 if (this.getPlayerTurn() == TicTacToeGame.PLAYER_ONE
                     && playerOneTurnCount > playerTwoTurnCount) {
                     if (this.isGameOver()) {
-                        this.setState(STATE.GAME_OVER, null, this.getWinner());
+                        yield this.setState(STATE.GAME_OVER, null, this.getWinner());
                         break;
                     }
 
@@ -176,11 +182,11 @@ class TicTacToeGame extends Game {
                 } else if (this.getPlayerTurn() == TicTacToeGame.PLAYER_TWO
                     && playerOneTurnCount === playerTwoTurnCount) {
                     if (this.isGameOver()) {
-                        this.setState(STATE.GAME_OVER, null, this.getWinner());
+                        yield this.setState(STATE.GAME_OVER, null, this.getWinner());
                         break;
                     }
 
-                    this.gameState.setPlayerTurn(TicTacToeGame.PLAYER_ONE);
+                    yield this.gameState.setPlayerTurn(TicTacToeGame.PLAYER_ONE);
                 }
 
                 break;

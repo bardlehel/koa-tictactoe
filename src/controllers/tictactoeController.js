@@ -42,11 +42,12 @@ class TicTacToeController {
             game.registerPlayer(koa.ip);
 
             //step through game logic
-            game.doGameLogicStep();
+            yield game.doGameLogicStep();
         }
 
         let data = getDataForClient(this.ip);
         koa.status = 200;
+
         yield koa.render("index", {
             data: data,
             ajaxEndpoint: koa.request.origin + '/ajax'
@@ -67,8 +68,8 @@ class TicTacToeController {
         if(isNaN(squareNum) || squareNum < 0 || squareNum > 9)
             return;
 
-        game.board.setSquare(squareNum, role);
-        game.doGameLogicStep();
+        yield game.board.setSquare(squareNum, role);
+        yield game.doGameLogicStep();
 
         koa.status = 200;
         koa.redirect('/');

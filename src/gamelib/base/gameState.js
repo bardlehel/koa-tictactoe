@@ -1,5 +1,6 @@
 "use strict";
 
+import co from 'co';
 import {Enum} from 'enumify';
 import GameData from './gameData';
 
@@ -27,18 +28,21 @@ class GameState extends GameData {
         this.data.turn = 1;
         this.data.winner = null;
 
-        if(save)
-            this.save();
+        if(save) {
+            co(function*() {
+                yield this.save();
+            });
+        }
     }
 
-    setPlayerTurn(player) {
-        if(isNan(player) || player < 0 || player >= this.game.TotalPlayers) {
+    *setPlayerTurn(player) {
+        if(isNaN(player) || player < 0 || player >= this.game.TotalPlayers) {
             throw new Error('invalid player number');
         }
 
         this.data.state = STATE.PLAYER_TURN;
         this.data.turn = player;
-        this.save();
+        yield this.save();
     }
 
     getPlayerTurn() {

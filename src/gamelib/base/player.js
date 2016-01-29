@@ -25,7 +25,7 @@ class Player {
 
     get data() {
         return {
-            count: this.playerCount(),
+            count: this.playerCount,
             ip: this.ipAddress
         }
     }
