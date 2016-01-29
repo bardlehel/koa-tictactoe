@@ -24,12 +24,12 @@ let _totalPlayers = Symbol();
 let _persistence = Symbol();
 
 class Game {
-    constructor(persistence) {
-        this.gameState = new _gameState2.default(this, persistence);
+    constructor(numPlayers, persistence) {
+        this[_persistence] = persistence;
+        this.setup(numPlayers);
     }
 
-    createNewGame(numPlayers) {
-
+    setup(numPlayers) {
         if (isNaN(numPlayers)) throw new Error('numPlayers is NaN');
         if (numPlayers <= 0) throw new Error('numPlayers is not a valid value');
 
@@ -40,7 +40,7 @@ class Game {
         }
 
         this[_totalPlayers] = numPlayers;
-
+        this.gameState = new _gameState2.default(this, this[_persistence]);
         this.gameState.reset();
     }
 

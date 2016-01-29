@@ -19,24 +19,26 @@ class GameState extends GameData {
     constructor(gameInstance, persistence) {
         super(persistence, STATE_KEY);
         this.game = gameInstance;
-        this.reset();
+        this.reset(false);
     }
 
-    reset() {
+    reset(save=true) {
         this.data.state = STATE.NOT_STARTED;
         this.data.turn = 1;
         this.data.winner = null;
-        this.save().next();
+
+        if(save)
+            this.save();
     }
 
     setPlayerTurn(player) {
-        if(isNan(player) || player < 1 || player > this.game.TotalPlayers) {
+        if(isNan(player) || player < 0 || player >= this.game.TotalPlayers) {
             throw new Error('invalid player number');
         }
 
         this.data.state = STATE.PLAYER_TURN;
         this.data.turn = player;
-        this.save().next();
+        this.save();
     }
 
     getPlayerTurn() {
@@ -46,4 +48,4 @@ class GameState extends GameData {
 }
 
 export default GameState;
-export { STATE };
+export { STATE, STATE_KEY };

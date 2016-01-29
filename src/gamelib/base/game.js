@@ -1,58 +1,22 @@
 "use strict";
 
-import _ from 'underscore';
 import GameState from './gameState';
-import Player from './player';
+import GamePlayers from './gamePlayers';
 
-//private properties:
-let _players = Symbol();
-let _totalPlayers = Symbol();
+//private property keys:
 let _persistence = Symbol();
 
 class Game {
-    constructor(persistence) {
-        this.gameState = new GameState(this, persistence);
+    constructor(numPlayers, persistence) {
+        this[_persistence] = persistence;
+        this.setup(numPlayers);
     }
 
-    createNewGame(numPlayers) {
-
-        if(isNaN(numPlayers))
-            throw new Error('numPlayers is NaN');
-        if(numPlayers <= 0)
-            throw new Error('numPlayers is not a valid value');
-
-        this[_players] = [];
-        //create objects for each player in game
-        for(var i = 0; i != numPlayers; i++) {
-            this[_players].push(new Player());
-        }
-
-        this[_totalPlayers] = numPlayers;
-
+    setup(numPlayers) {
+        this.players = new GamePlayers(numPlayers, this[_persistence]);
+        this.gameState = new GameState(this, this[_persistence]);
         this.gameState.reset();
     };
-
-    getPlayerByCount(playerCount) {
-        if(playerCount < 1)
-            throw new Error('plq');
-
-        return _.find(this[_players], ()=>this.playerCount == playerCount);
-    }
-
-    getPlayerByIndex(n) {
-        if(n < 0)
-            throw new Error('plq');
-
-        return this[_players][n];
-    }
-
-    get Players() {
-        return this[_players];
-    }
-
-    get TotalPlayers() {
-        return this[_totalPlayers];
-    }
 
     getState() {
         return this.gameState.data;
@@ -69,11 +33,8 @@ class Game {
         this.gameState.save();
     }
 
-    doGameLogicStep() {
-
-    }
-
-
+    //must be overridden and defined by subclass
+    doGameLogicStep() {}
 };
 
 export default Game;

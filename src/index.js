@@ -16,6 +16,7 @@ let router = KoaRouter();
 
 function handleError(err) {
     console.log('server error', err);
+    console.log(err.stack);
     process.exit(1);
 }
 

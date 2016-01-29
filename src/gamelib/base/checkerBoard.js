@@ -18,7 +18,8 @@ class CheckerBoard extends GameData {
             throw new Error('bad index for board');
 
         this.data.grid[n - 1] = val;
-        this.save().next();
+
+        this.save();
     }
 
 
@@ -64,10 +65,9 @@ class CheckerBoard extends GameData {
             }
         }
 
-
-
         return count;
     };
 }
 
 export default CheckerBoard;
+export {BOARD_KEY};

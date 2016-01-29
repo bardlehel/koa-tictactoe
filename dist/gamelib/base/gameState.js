@@ -23,14 +23,17 @@ class GameState extends _gameData2.default {
     constructor(gameInstance, persistence) {
         super(persistence, STATE_KEY);
         this.game = gameInstance;
-        this.reset();
+        this.reset(false);
     }
 
     reset() {
+        let save = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
         this.data.state = STATE.NOT_STARTED;
         this.data.turn = 1;
         this.data.winner = null;
-        this.save().next();
+
+        if (save) this.save();
     }
 
     setPlayerTurn(player) {
@@ -40,7 +43,7 @@ class GameState extends _gameData2.default {
 
         this.data.state = STATE.PLAYER_TURN;
         this.data.turn = player;
-        this.save().next();
+        this.save();
     }
 
     getPlayerTurn() {

@@ -1,14 +1,18 @@
-Koa-based TicTacToe
+Koa-based TicTacToe (Coding demonstration for Tinder)
+By: Lehel Kovach
+Date: 1-29-16
 
 Requirements:
-Node > 5.0
+Node.js > 5.0
+gulp-cli > 0.4.0 (alpha)
+
 
 To run:
     1) Alter src/config.json to configure mongodb and listening port
     2) Execute Commands:
         npm install
         bower install
-        npm run gulp
+        gulp
 
 To play:
     * Players are defined by their IP address

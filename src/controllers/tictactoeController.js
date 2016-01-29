@@ -10,7 +10,7 @@ let persistence = new Persistence(config.mongodb, GameSchema);
 let game = new TicTacToeGame(persistence);
 
 
-function getClientGameRole(clientIP) {
+let getClientGameRole = function (clientIP) {
     let client = TicTacToeGame.SPECTATOR;
 
     if(game.getIPAddressForPlayer(TicTacToeGame.PLAYER_ONE) == clientIP) {
@@ -22,7 +22,7 @@ function getClientGameRole(clientIP) {
     return client;
 }
 
-function getDataForClient(clientIP) {
+let getDataForClient = function (clientIP) {
     return {
         gameData: game.getGameData(),
         client: getClientGameRole(clientIP)

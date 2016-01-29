@@ -51,7 +51,7 @@ class TicTacToeGame extends _game2.default {
 
         if (!persistence) throw new Error("persistence object required!");
 
-        super(persistence);
+        super(TicTacToeGame.TOTAL_PLAYERS, persistence);
         this.setupGame(persistence);
         _gameInstance = this;
     }
@@ -60,12 +60,6 @@ class TicTacToeGame extends _game2.default {
         return _gameInstance;
     }
 
-    *loadLastGameIfUnfinished(persistence) {
-        if (yield this.lastGameUnfinished(persistence)) {
-            yield this.board.load();
-            yield this.gameState.load();
-        }
-    }
 
     *lastGameUnfinished(persistence) {
         try {
@@ -86,11 +80,11 @@ class TicTacToeGame extends _game2.default {
 
     setupGame(persistence) {
         this.joinedPlayers = new Map();
-        this.board = new _checkerBoard2.default(TicTacToeGame.BOARD_SIZE);
+        this.board = new _checkerBoard2.default(TicTacToeGame.BOARD_SIZE, persistence);
 
-        if (!this.loadLastGameIfUnfinished().next()) {
-            persistence.createNewGameDocument().next();
-            super.createNewGame(TicTacToeGame.TOTAL_PLAYERS);
+        if (!this.loadLastGameIfUnfinished(persistence)) {
+            persistence.createNewGameDocument();
+            //super.createNewGame(TicTacToeGame.TOTAL_PLAYERS);
         }
     }
 
@@ -187,7 +181,7 @@ class TicTacToeGame extends _game2.default {
             case _gameState.STATE.PLAYER_TURN:
                 let playerOneTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_ONE);
                 let playerTwoTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_TWO);
-                console.log('x = ' + playerOneTurnCount + ' o=' + playerTwoTurnCount);
+
                 if (this.getPlayerTurn() == TicTacToeGame.PLAYER_ONE && playerOneTurnCount > playerTwoTurnCount) {
                     if (this.isGameOver()) {
                         this.setState(_gameState.STATE.GAME_OVER, null, this.getWinner());
@@ -196,17 +190,14 @@ class TicTacToeGame extends _game2.default {
 
                     this.setState(_gameState.STATE.PLAYER_TURN, TicTacToeGame.PLAYER_TWO);
                 } else if (this.getPlayerTurn() == TicTacToeGame.PLAYER_TWO && playerOneTurnCount === playerTwoTurnCount) {
-                    //check if game is over?
-                    console.log(1);
                     if (this.isGameOver()) {
                         this.setState(_gameState.STATE.GAME_OVER, null, this.getWinner());
                         break;
                     }
-                    console.log(2);
 
                     this.setState(_gameState.STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
-                    console.log(3);
                 }
+
                 break;
             case _gameState.STATE.GAME_OVER:
 

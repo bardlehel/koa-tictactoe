@@ -22,12 +22,15 @@ class Persistence {
     constructor(mongoURI, schema) {
         this[_mongoDocumentID] = null;
         this[_mongoSchema] = schema;
-        this.connect(mongoURI);
-        console.log('connected to ' + mongoURI);
+        let gen = this.connect(mongoURI);
+        if (gen.next().value) console.log('connected to ' + mongoURI);else throw new Error('could not connect to' + mongoURI);
     }
 
     *connect(mongoConnURI) {
         this[_mongooseConn] = yield _mongoose2.default.connect(mongoConnURI);
+        if (this[_mongooseConn]) return true;
+
+        return false;
     }
 
     *createNewGameDocument() {
@@ -36,6 +39,7 @@ class Persistence {
     }
 
     *saveGameData(key, val) {
+        console.log('saving game data...');
         let gameData = this[_gameDataDocument];
         gameData[key] = val;
 
@@ -48,14 +52,12 @@ class Persistence {
     }
 
     *loadGameData(key) {
+
         return this[_gameDataDocument][key];
     }
 
-    clearGameDocument() {
-        this[_gameDataDocument] = null;
-    }
-
     *loadLastGameDocument() {
+        console.log('bbb');
         this[_gameDataDocument] = null;
         this[_gameDataDocument] = yield this[_mongoSchema].findOne().sort({ created_at: -1 }).exec();
 
