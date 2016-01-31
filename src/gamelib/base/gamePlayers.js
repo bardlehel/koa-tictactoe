@@ -26,6 +26,10 @@ class GamePlayers extends GameData {
         }
     }
 
+    get count() {
+        return this[_totalPlayers];
+    }
+
     getPlayerByIndex(n) {
         if(n < 0 || n >= this[_totalPlayers])
             throw new Error('bad player index');
@@ -49,17 +53,20 @@ class GamePlayers extends GameData {
     *load() {
         yield super.load();
 
-        //set each player = object data in this.data array
+        //make sure the db data is sorted by index
+        this.data = _.sortBy(this.data, 'index' );
+
         for(let i = 0; i < this.data.length; i++) {
             this[_players][i] = new Player(this.data[i]);
         }
     }
 
     *save() {
-        //set this.data = array of player objects
         this.data = [];
+
+        let _this = this;
         this[_players].forEach(function(el) {
-            this.data.push(el.data);
+            _this.data.push(el.data);
         });
 
         yield super.save();

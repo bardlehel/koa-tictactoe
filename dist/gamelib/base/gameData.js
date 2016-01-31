@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _co = require('co');
+var _co = require("co");
 
 var _co2 = _interopRequireDefault(_co);
 
@@ -19,29 +19,12 @@ class GameData {
         this.persister = persistence;
     }
 
-    save() {
-        let thisGameData = this;
-        console.log('saving gamedata...');
-
-        (0, _co2.default)(function* () {
-            yield thisGameData.persister.saveGameData(thisGameData[_key], thisGameData.data);
-        }).then(function (value) {
-            console.log(value);
-        }, function (err) {
-            console.error(err.stack);
-        });
+    *save() {
+        yield this.persister.saveGameData(this[_key], this.data);
     }
 
     *load() {
-        let thisGameData = this;
-
-        (0, _co2.default)(function* () {
-            thisGameData.data = yield thisGameData.persister.loadGameData(thisGameData[_key]);
-        }).then(function (value) {
-            console.log(value);
-        }, function (err) {
-            console.error(err.stack);
-        });
+        this.data = yield this.persister.loadGameData(this[_key]);
     }
 };
 

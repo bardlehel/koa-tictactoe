@@ -1,30 +1,48 @@
 "use strict";
 
-//static properties
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-let playerCount = 0;
+
+var _gameData = require("./gameData");
+
+var _gameData2 = _interopRequireDefault(_gameData);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//static properties
+let nextPlayerIndex = 0;
 
 //private properties
-let _playerCount = Symbol();
+let _playerIndex = Symbol();
 
 class Player {
     constructor() {
-        this[_playerCount] = Player.getNextPlayerCount();
+        let playerData = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+        if (!playerData) {
+            this[_playerIndex] = Player.getNextPlayerIndex();
+        } else {
+            this[_playerIndex] = playerData.index;
+            this.ipAddress = playerData.ip;
+        }
     }
 
-    get playerCount() {
-        return this[_playerCount];
+    get playerIndex() {
+        return this[_playerIndex];
     }
 
-    get hasStartedPlaying() {
-        return this.ipAddress != undefined;
+    get data() {
+        return {
+            count: this.playerIndex,
+            ip: this.ipAddress
+        };
     }
 
-    static getNextPlayerCount() {
-        return ++playerCount;
+    static getNextPlayerIndex() {
+        let ret = nextPlayerIndex;
+        ++nextPlayerIndex;
+        return ret;
     }
 };
 

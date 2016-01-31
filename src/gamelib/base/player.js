@@ -1,37 +1,39 @@
 "use strict";
 
-import GameData from 'gameData';
+import GameData from './gameData';
 
 //static properties
-let playerCount = 0;
+let nextPlayerIndex = 0;
 
 //private properties
-let _playerCount = Symbol();
+let _playerIndex = Symbol();
 
 
 class Player {
     constructor(playerData=null) {
         if(!playerData) {
-            this[_playerCount] = Player.getNextPlayerCount();
+                this[_playerIndex] = Player.getNextPlayerIndex();
         } else {
-            this[_playerCount] = playerData.count;
+            this[_playerIndex] = playerData.index;
             this.ipAddress = playerData.ip;
         }
     }
 
-    get playerCount() {
-        return this[_playerCount];
+    get playerIndex() {
+        return this[_playerIndex];
     }
 
     get data() {
         return {
-            count: this.playerCount,
+            count: this.playerIndex,
             ip: this.ipAddress
         }
     }
 
-    static getNextPlayerCount() {
-        return ++playerCount;
+    static getNextPlayerIndex() {
+        let ret = nextPlayerIndex;
+        ++nextPlayerIndex;
+        return ret;
     }
 };
 

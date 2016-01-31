@@ -37,8 +37,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 let app = module.exports = (0, _koa2.default)();
 let router = (0, _koaRouter2.default)();
 
+app.startGame = _tictactoeController.startGame;
+
 function handleError(err) {
     console.log('server error', err);
+    console.log(err.stack);
     process.exit(1);
 }
 
@@ -53,24 +56,29 @@ router.use((0, _koaHandlebars2.default)({
 }));
 
 router.get('/', function* () {
-    console.log('handling GET /');
     yield _tictactoeController2.default.getGame(this);
 });
 
 router.post('/', function* () {
-    console.log('handling POST /');
     yield _tictactoeController2.default.postMove(this);
 });
 
 router.get('/ajax', function* () {
-    console.log('handling GET /ajax/');
     yield _tictactoeController2.default.getCurrentGameState(this);
 });
 
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(_config2.default.port, '0.0.0.0', function (err) {
-    if (err) handleError(err);
+function gameStartCallback() {
+    console.log('game started.');
 
-    console.log('listening on Port:' + _config2.default.port);
-});
+    app.server = app.listen(_config2.default.port, '0.0.0.0', function (err) {
+        if (err) handleError(err);
+
+        if (app.gameStartCallback) app.gameStartCallback();
+
+        console.log('listening on Port:' + _config2.default.port);
+    });
+}
+
+app.startGame(gameStartCallback);

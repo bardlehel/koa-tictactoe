@@ -42,6 +42,7 @@ class GameState extends GameData {
 
         this.data.state = STATE.PLAYER_TURN;
         this.data.turn = player;
+        this.data.winner = null;
         yield this.save();
     }
 
@@ -49,6 +50,21 @@ class GameState extends GameData {
         return this.data.turn;
     }
 
+    //overrides
+
+    *load() {
+        yield super.load();
+
+        //marshal state back to Enum
+        let enumName = this.data.stateName;
+        this.data.state = STATE.enumValueOf(enumName);
+    }
+
+    *save() {
+        this.data.stateName = this.data.state.name;
+
+        yield super.save();
+    }
 }
 
 export default GameState;

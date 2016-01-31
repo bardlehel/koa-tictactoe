@@ -9,6 +9,7 @@ import co from 'co';
 //private properties...
 let _gameCounter = 0;
 let _gameInstance = null;
+let _persistence = Symbol();
 
 class TicTacToeGame extends Game {
 
@@ -28,7 +29,16 @@ class TicTacToeGame extends Game {
             throw new Error("persistence object required!");
 
         super(TicTacToeGame.TOTAL_PLAYERS, persistence);
-        this.setupGame(persistence);
+
+        this.persistence = persistence;
+
+        let _this = this;
+
+        persistence.connectCallback = function() {
+            _this.setupGame(persistence);
+            console.log('finished setting up TicTacToe.');
+        }
+
         _gameInstance = this;
     }
 
@@ -40,24 +50,34 @@ class TicTacToeGame extends Game {
     setupGame(persistence) {
         this.board = new CheckerBoard(TicTacToeGame.BOARD_SIZE, persistence);
 
+        if(this.persistence.isMock) return;
+
         co(function*() {
             try {
+                console.log('loading last saved match....');
                 yield persistence.loadLastGameDocument();
-                if(persistence.getGameData(STATE_KEY).state == STATE.GAME_OVER)
+
+                if(persistence.getGameData(STATE_KEY).state == STATE.GAME_OVER) {
+                    console.log('last match finished.  creating new match in db...');
                     yield persistence.createNewGameDocument();
+                    consol.log('new match document created');
+                }
                 else {
                     yield this.board.load();
                     yield this.players.load();
                     yield this.gameState.load();
+                    console.log('successfully loaded last match data');
                 }
 
             } catch(err) {
+                console.log('error trying to load last match.  creating new game in db');
                 yield persistence.createNewGameDocument();
+                console.log('successfully created new match document');
             }
         });
     }
 
-    registerPlayer(ipAddr) {
+    *registerPlayer(ipAddr) {
         if(!ipAddr)
             throw new Error('no ipaddr supplied');
 
@@ -72,6 +92,8 @@ class TicTacToeGame extends Game {
             player = this.players.getPlayerByIndex(TicTacToeGame.PLAYER_TWO);
 
         player.ipAddress = ipAddr;
+
+        yield this.players.save();
     }
 
     *setState(state, player=null, winner=null) {
@@ -86,16 +108,18 @@ class TicTacToeGame extends Game {
 
         switch(ret.state.state) {
             case STATE.WAITING_ON_PLAYER:
+
                 ret.message = "Waiting on Player 2...";
                 break;
             case STATE.PLAYER_TURN:
-                console.log('turn = ' + ret.state.turn);
+
                 if(ret.state.turn == TicTacToeGame.PLAYER_ONE)
                     ret.message = "X to move!";
                 else
                     ret.message = "O to move!";
                 break;
             case STATE.GAME_OVER:
+
                 if(ret.state.winner == TicTacToeGame.PLAYER_ONE)
                     ret.message = "X wins!";
                 else if (ret.state.winner == TicTacToeGame.PLAYER_TWO)
@@ -157,30 +181,36 @@ class TicTacToeGame extends Game {
     *doGameLogicStep() {
         switch(this.getState().state) {
             case STATE.NOT_STARTED:
+
                 if(this.players.numJoined > 0) {
                     yield this.setState(STATE.WAITING_ON_PLAYER);
                 }
                 break;
             case STATE.WAITING_ON_PLAYER:
+
                 if(this.players.numJoined === 2) {
-                    yield this.setState(STATE.PLAYER_TURN, TicTacToeGame.PLAYER_ONE);
+                    console.log('waiting for player, before setState');
+                    yield this.gameState.setPlayerTurn(TicTacToeGame.PLAYER_ONE);
                 }
                 break;
             case STATE.PLAYER_TURN:
+
                 let playerOneTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_ONE);
                 let playerTwoTurnCount = this.board.getFilledSquares(TicTacToeGame.PLAYER_TWO);
 
                 if (this.getPlayerTurn() == TicTacToeGame.PLAYER_ONE
                     && playerOneTurnCount > playerTwoTurnCount) {
+
                     if (this.isGameOver()) {
                         yield this.setState(STATE.GAME_OVER, null, this.getWinner());
                         break;
                     }
 
-                    this.gameState.setPlayerTurn(TicTacToeGame.PLAYER_TWO);
+                    yield this.gameState.setPlayerTurn(TicTacToeGame.PLAYER_TWO);
 
                 } else if (this.getPlayerTurn() == TicTacToeGame.PLAYER_TWO
                     && playerOneTurnCount === playerTwoTurnCount) {
+
                     if (this.isGameOver()) {
                         yield this.setState(STATE.GAME_OVER, null, this.getWinner());
                         break;
@@ -192,6 +222,8 @@ class TicTacToeGame extends Game {
                 break;
             case STATE.GAME_OVER:
 
+                console.log('game ended.');
+                process.exit();
                 break;
             default:
                 throw new Error('code should not be reached');

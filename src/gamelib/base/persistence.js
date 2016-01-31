@@ -4,18 +4,54 @@ import mongoose from 'mongoose';
 
 //private property keys:
 let _mongooseConn = Symbol();
-let _mongoSchema = Symbol();
+let _mongoModel = Symbol();
 let _mongoDocumentID = Symbol();
-let _gameDataDocument = Symbol();
+let _mock = Symbol();
+
+let _connectedCallback = null;
+
+const MOCK_CONNECTION = 'mock';
+
+var connection = mongoose.connection;
+connection.on('error', console.error.bind(console, 'connection error:'));
+connection.once('open', function() {
+    console.log('Successfully connected to mongodb');
+    if(_connectedCallback)
+        _connectedCallback();
+});
 
 class Persistence {
 
-    constructor(mongoURI, schema) {
-        this[_mongoDocumentID] = null;
-        this[_mongoSchema] = schema;
-        let gen = this.connect(mongoURI);
+    constructor(mongoURI, model, connectCallback) {
+        let _this = this;
+
+        _connectedCallback = function() {
+            console.log('calling connect callbacks...');
+            connectCallback();
+            _this.connectCallback();
+        }
+
+        if(mongoURI === MOCK_CONNECTION) {
+            if(connectCallback)
+                connectCallback();
+
+            this.isMock = true;
+
+            return;
+        }
+
+        this[_mongoModel] = model;
+
+        let options = {
+            server: { poolSize: 5 },
+                replset: { rs_name: 'gamerepl' }
+            };
+
+        options.server.socketOptions = options.replset.socketOptions = { keepAlive: 120 };
+        let gen = this.connect(mongoURI, options);
+
         if(gen.next().value)
-            console.log('connected to ' + mongoURI);
+            console.log('connecting to ' + mongoURI);
         else throw new Error('could not connect to' + mongoURI);
     }
 
@@ -28,40 +64,39 @@ class Persistence {
     }
 
     *createNewGameDocument() {
-        this[_gameDataDocument] = yield this[_mongoSchema].create({ started: new Date() });
-        this[_mongoDocumentID] = this[_gameDataDocument].id;
+        let match  = yield this[_mongoModel].create({ started: new Date() });
+        this[_mongoDocumentID] = match.id;
     }
 
     *saveGameData(key, val) {
+        if(this.isMock)
+            return;
+
         console.log('saving game data...');
-        let gameData = this[_gameDataDocument];
+        let gameData = yield this[_mongoModel].findOne({_id: this[_mongoDocumentID]}).exec();
         gameData[key] = val;
 
-        try {
-            yield gameData.save();
-        } catch (err) {
-            err.message = 'game data could not be saved';
-            throw err;
-        }
+        yield gameData.save(function (err) {
+                if(err) console.log(err);
+                else 'successfully saved game!';
+            });
     }
 
-    loadGameData(key) {
-        if(!this[_gameDataDocument])
-            throw new Error('no game document loaded!');
-
-        return this[_gameDataDocument][key];
+    *loadGameData(key) {
+        let gameData = yield this[_mongoModel].findOne({_id: this[_mongoDocumentID]}).exec();
+        return gameData[key];
     }
 
     *loadLastGameDocument() {
-        this[_gameDataDocument] = null;
-        this[_gameDataDocument] = yield this[_mongoSchema].findOne().sort({created_at: -1}).exec();
+        let gameData = yield this[_mongoModel].findOne().sort({created_at: -1}).exec();
 
-        if(!this[_gameDataDocument])
+        if(!gameData)
             throw new Error('could not find record in database');
 
-        this[_mongoDocumentID] = this[_gameDataDocument].id;
+        this[_mongoDocumentID] = gameData.id;
     }
 
 };
 
 export default Persistence;
+export {MOCK_CONNECTION};

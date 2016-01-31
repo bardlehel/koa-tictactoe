@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.BOARD_KEY = undefined;
 
 var _gameData = require('./gameData');
 
@@ -22,12 +23,12 @@ class CheckerBoard extends _gameData2.default {
         }
     }
 
-    setSquare(n, val) {
+    *setSquare(n, val) {
         if (isNaN(n) || n < 1 || n > Math.pow(this.data.boardSize, 2)) throw new Error('bad index for board');
 
         this.data.grid[n - 1] = val;
 
-        this.save();
+        yield this.save();
     }
 
     getSquare(n) {
@@ -76,3 +77,4 @@ class CheckerBoard extends _gameData2.default {
 }
 
 exports.default = CheckerBoard;
+exports.BOARD_KEY = BOARD_KEY;

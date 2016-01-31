@@ -12,7 +12,6 @@ class GameData {
     }
 
     *save() {
-        console.log('saving gamedata...');
         yield this.persister.saveGameData(this[_key], this.data);
     }
 

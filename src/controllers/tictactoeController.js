@@ -2,12 +2,17 @@
 
 import TicTacToeGame from '../gamelib/tictactoeGame';
 import Persistence from '../gamelib/base/persistence';
-import GameSchema from '../models/TicTacToeGameState';
+import TicTacToeMatchSchema from '../models/TicTacToeMatch';
 import config from '../config/config';
 import parse from 'co-body';
 
-let persistence = new Persistence(config.mongodb, GameSchema);
-let game = new TicTacToeGame(persistence);
+let persistence = null;
+let game = null;
+
+let startGame = function(connCB) {
+    persistence = new Persistence(config.mongodb, TicTacToeMatchSchema, connCB);
+    game = new TicTacToeGame(persistence);
+}
 
 
 let getClientGameRole = function (clientIP) {
@@ -39,9 +44,7 @@ class TicTacToeController {
         if( !game.getIPAddressForPlayer(TicTacToeGame.PLAYER_ONE)
             || !game.getIPAddressForPlayer(TicTacToeGame.PLAYER_TWO)) {
 
-            game.registerPlayer(koa.ip);
-
-            //step through game logic
+            yield game.registerPlayer(koa.ip);
             yield game.doGameLogicStep();
         }
 
@@ -88,5 +91,6 @@ class TicTacToeController {
 let controller = new TicTacToeController();
 
 export default controller;
+export {startGame};
 
 

@@ -28,6 +28,7 @@
     "babel-polyfill": "^6.3.14",
     "babel-preset-es2015-node5": "^1.1.2",
     "chai": "^3.4.1",
+    "co-mocha": "^1.1.2",
     "co-supertest": "0.0.10",
     "es6-module-loader": "^0.17.10",
     "es6-module-transpiler": "^0.10.0",

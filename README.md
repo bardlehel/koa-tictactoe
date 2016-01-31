@@ -20,5 +20,5 @@ To play:
 
     1) Go to http://localhost:8000/ (or whatever set port)
     2) Wait for challenger to play Os.  (page will refresh)
-    3) When the page says your turn, choose a square to put your X.
-    4) ... etc
+    3) When the page says your turn, choose a square to put your X and left-click inside it.
+    4) etc...

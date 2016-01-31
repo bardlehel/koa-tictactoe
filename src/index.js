@@ -7,12 +7,14 @@ import handlebars from "koa-handlebars";
 import KoaRouter from 'koa-router';
 import config from './config/config';
 import controller from './controllers/tictactoeController';
+import {startGame} from './controllers/tictactoeController';
 import 'babel-core/register';
 import 'babel-polyfill';
 
 let app = module.exports = Koa();
 let router = KoaRouter();
 
+app.startGame = startGame;
 
 function handleError(err) {
     console.log('server error', err);
@@ -31,17 +33,14 @@ router.use(handlebars({
 }));
 
 router.get('/', function* () {
-    console.log('handling GET /');
     yield controller.getGame(this);
 });
 
 router.post('/', function* () {
-    console.log('handling POST /');
     yield controller.postMove(this);
 });
 
-router.get('/ajax', function* (){
-    console.log('handling GET /ajax/');
+router.get('/ajax', function* () {
     yield controller.getCurrentGameState(this);
 });
 
@@ -49,8 +48,18 @@ app
     .use(router.routes())
     .use(router.allowedMethods());
 
-app.listen(config.port, '0.0.0.0', function(err) {
-    if(err) handleError(err);
+function gameStartCallback() {
+    console.log('game started.');
 
-    console.log('listening on Port:' + config.port);
-});
+    app.server = app.listen(config.port, '0.0.0.0', function(err) {
+        if(err) handleError(err);
+
+        if(app.gameStartCallback)
+            app.gameStartCallback();
+
+        console.log('listening on Port:' + config.port);
+    });
+}
+
+app.startGame(gameStartCallback);
+

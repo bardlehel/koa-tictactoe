@@ -3,7 +3,11 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.STATE = undefined;
+exports.STATE_KEY = exports.STATE = undefined;
+
+var _co = require('co');
+
+var _co2 = _interopRequireDefault(_co);
 
 var _enumify = require('enumify');
 
@@ -33,24 +37,45 @@ class GameState extends _gameData2.default {
         this.data.turn = 1;
         this.data.winner = null;
 
-        if (save) this.save();
+        if (save) {
+            (0, _co2.default)(function* () {
+                yield this.save();
+            });
+        }
     }
 
-    setPlayerTurn(player) {
-        if (isNan(player) || player < 1 || player > this.game.TotalPlayers) {
+    *setPlayerTurn(player) {
+        if (isNaN(player) || player < 0 || player >= this.game.TotalPlayers) {
             throw new Error('invalid player number');
         }
 
         this.data.state = STATE.PLAYER_TURN;
         this.data.turn = player;
-        this.save();
+        this.data.winner = null;
+        yield this.save();
     }
 
     getPlayerTurn() {
         return this.data.turn;
     }
 
+    //overrides
+
+    *load() {
+        yield super.load();
+
+        //marshal state back to Enum
+        let enumName = this.data.stateName;
+        this.data.state = STATE.enumValueOf(enumName);
+    }
+
+    *save() {
+        this.data.stateName = this.data.state.name;
+
+        yield super.save();
+    }
 }
 
 exports.default = GameState;
 exports.STATE = STATE;
+exports.STATE_KEY = STATE_KEY;
