@@ -72,9 +72,10 @@ class Persistence {
         if(this.isMock)
             return;
 
-        console.log('saving game data...');
+        console.log('saving game data: key=' + key + ' value=' + val);
         let gameData = yield this[_mongoModel].findOne({_id: this[_mongoDocumentID]}).exec();
         gameData[key] = val;
+        console.log(gameData);
 
         yield gameData.save(function (err) {
                 if(err) console.log(err);
@@ -83,15 +84,23 @@ class Persistence {
     }
 
     *loadGameData(key) {
+        console.log('looking up document for id:' + this[_mongoDocumentID]);
         let gameData = yield this[_mongoModel].findOne({_id: this[_mongoDocumentID]}).exec();
+        console.log('returning data for key:' + key);
+        console.log('gameData: ');
+        console.log(gameData);
         return gameData[key];
     }
 
     *loadLastGameDocument() {
-        let gameData = yield this[_mongoModel].findOne().sort({created_at: -1}).exec();
+        let gameData = yield this[_mongoModel].findOne().sort('-started').exec();
 
         if(!gameData)
             throw new Error('could not find record in database');
+        else {
+            console.log('loaded data:');
+            console.log(gameData);
+        }
 
         this[_mongoDocumentID] = gameData.id;
     }

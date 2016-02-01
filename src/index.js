@@ -48,7 +48,7 @@ app
     .use(router.routes())
     .use(router.allowedMethods());
 
-function gameStartCallback() {
+let gameStartCallback = function () {
     console.log('game started.');
 
     app.server = app.listen(config.port, '0.0.0.0', function(err) {

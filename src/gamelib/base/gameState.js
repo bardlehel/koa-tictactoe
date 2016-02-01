@@ -24,6 +24,7 @@ class GameState extends GameData {
     }
 
     reset(save=true) {
+        console.log('resetting game state...');
         this.data.state = STATE.NOT_STARTED;
         this.data.turn = 1;
         this.data.winner = null;
@@ -31,6 +32,7 @@ class GameState extends GameData {
         if(save) {
             co(function*() {
                 yield this.save();
+                console.log('saved new game state');
             });
         }
     }
@@ -53,16 +55,16 @@ class GameState extends GameData {
     //overrides
 
     *load() {
+        console.log('base loading method starting...');
         yield super.load();
-
+        console.log('gameState.data = ');
+        console.log(this.data);
         //marshal state back to Enum
-        let enumName = this.data.stateName;
-        this.data.state = STATE.enumValueOf(enumName);
+        console.log('marshaling state' + this.data.state + 'to enum');
+        this.data.state = STATE.enumValueOf(this.data.state.name);
     }
 
     *save() {
-        this.data.stateName = this.data.state.name;
-
         yield super.save();
     }
 }

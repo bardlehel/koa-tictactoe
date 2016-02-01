@@ -4,6 +4,7 @@ import Game from './base/game';
 import Persistence from './base/persistence';
 import CheckerBoard from './base/checkerBoard';
 import {STATE, STATE_KEY} from './base/gameState';
+import GameState from './base/gameState';
 import co from 'co';
 
 //private properties...
@@ -20,7 +21,7 @@ class TicTacToeGame extends Game {
     static get PLAYER_TWO() { return TicTacToeGame.PLAYER_ONE + 1; }
     static get NO_WINNER() { return -1; }
 
-    constructor(persistence) {
+    constructor(persistence, setupCB) {
 
         if(++_gameCounter > 1)
            throw new Error("singleton object");
@@ -35,8 +36,7 @@ class TicTacToeGame extends Game {
         let _this = this;
 
         persistence.connectCallback = function() {
-            _this.setupGame(persistence);
-            console.log('finished setting up TicTacToe.');
+            _this.setupGame(persistence, setupCB);
         }
 
         _gameInstance = this;
@@ -47,33 +47,51 @@ class TicTacToeGame extends Game {
         return this.players.getPlayerByIndex(num).ipAddress;
     }
 
-    setupGame(persistence) {
+    setupGame(persistence, setupCB) {
         this.board = new CheckerBoard(TicTacToeGame.BOARD_SIZE, persistence);
 
         if(this.persistence.isMock) return;
+
+        let _this = this;
 
         co(function*() {
             try {
                 console.log('loading last saved match....');
                 yield persistence.loadLastGameDocument();
+                console.log('loaded document.')
+                yield _this.gameState.load();
+                console.log('loaded gamestate.')
+                let lastGameState = _this.gameState.data.state;
+                console.log('loaded game state data:');
+                console.log(lastGameState);
 
-                if(persistence.getGameData(STATE_KEY).state == STATE.GAME_OVER) {
+                if(lastGameState.state == STATE.GAME_OVER) {
                     console.log('last match finished.  creating new match in db...');
                     yield persistence.createNewGameDocument();
-                    consol.log('new match document created');
+                    console.log('new match document created');
                 }
                 else {
-                    yield this.board.load();
-                    yield this.players.load();
-                    yield this.gameState.load();
+                    yield _this.board.load();
+
+                    if(!_this.board.data || !_this.board.data.grid)
+                        throw new Error('no board data!');
+
+                    yield _this.players.load();
                     console.log('successfully loaded last match data');
                 }
 
             } catch(err) {
-                console.log('error trying to load last match.  creating new game in db');
+                _this.gameState = new GameState(_this, _this.persistence);
+                _this.board = new CheckerBoard(TicTacToeGame.BOARD_SIZE, persistence);
+                console.log('error trying to load last match.  creating new game in db:');
+                console.log(err);
                 yield persistence.createNewGameDocument();
+
                 console.log('successfully created new match document');
             }
+
+            console.log('finished setting up TicTacToe.');
+            setupCB();
         });
     }
 
@@ -179,6 +197,7 @@ class TicTacToeGame extends Game {
     }
 
     *doGameLogicStep() {
+        console.log(this.getState());
         switch(this.getState().state) {
             case STATE.NOT_STARTED:
 

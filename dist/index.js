@@ -69,7 +69,7 @@ router.get('/ajax', function* () {
 
 app.use(router.routes()).use(router.allowedMethods());
 
-function gameStartCallback() {
+let gameStartCallback = function gameStartCallback() {
     console.log('game started.');
 
     app.server = app.listen(_config2.default.port, '0.0.0.0', function (err) {
@@ -79,6 +79,6 @@ function gameStartCallback() {
 
         console.log('listening on Port:' + _config2.default.port);
     });
-}
+};
 
 app.startGame(gameStartCallback);

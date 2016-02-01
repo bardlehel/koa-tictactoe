@@ -16,6 +16,7 @@ class GameData {
     }
 
     *load() {
+        console.log('loading data for:' + this[_key]);
         this.data = yield this.persister.loadGameData(this[_key]);
     }
 };

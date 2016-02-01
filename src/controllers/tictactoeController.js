@@ -9,9 +9,16 @@ import parse from 'co-body';
 let persistence = null;
 let game = null;
 
-let startGame = function(connCB) {
-    persistence = new Persistence(config.mongodb, TicTacToeMatchSchema, connCB);
-    game = new TicTacToeGame(persistence);
+var startGame = function(connCB) {
+    //have TicTacToe setup cb called before game start callback.
+    let connCBWrapper = function() {
+        game = new TicTacToeGame(persistence, function () {
+            connCB();
+        });
+
+    }
+    persistence = new Persistence(config.mongodb, TicTacToeMatchSchema, connCBWrapper);
+
 }
 
 

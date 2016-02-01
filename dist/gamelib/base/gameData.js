@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _co = require("co");
+var _co = require('co');
 
 var _co2 = _interopRequireDefault(_co);
 
@@ -24,6 +24,7 @@ class GameData {
     }
 
     *load() {
+        console.log('loading data for:' + this[_key]);
         this.data = yield this.persister.loadGameData(this[_key]);
     }
 };
